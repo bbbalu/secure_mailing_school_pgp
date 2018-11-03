@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>TP secret mailer</title>
+
+	<!-- Compiled and minified CSS -->
+	<link rel="stylesheet" href="./extensions/materialize/css/materialize.min.css">
+	<link rel="stylesheet" href="./extensions/design.css">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+<body>
+
+	<nav class="main_navigation">
+		<div class="nav-wrapper">
+			<ul class="left">
+				<li class="active"><a href="inbox.html" href="#tab1">Inbox</a></li>
+				<li><a href="sent.html" href="#tab2">Sent</a></li>
+				<li><a href="about.html" href="#tab3">About</a></li>
+			</ul>
+			<ul class="right">
+				<li><a href="keygen.html"><i class="material-icons">security</i></a></li>
+				<li><a href="#"><i class="material-icons">settings</i></a></li>
+				<li><a href="#" id="close"><i class="material-icons">exit_to_app</i></a></li>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="content" id="page_content"></div>
+
+	<!-- Insert this line above script imports  -->
+	<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+	<!-- Compiled and minified JavaScript -->
+	<script src="./extensions/materialize/js/materialize.min.js"></script>
+
+	<!-- normal script imports etc  -->
+	<script src="./extensions/jquery/jquery-3.3.1.min.js"></script>    
+	<script src="./extensions/scripts.js"></script>    
+
+	<!-- Insert this line after script imports -->
+	<script>if (window.module) module = window.module;</script>
+
+</body>
+</html>

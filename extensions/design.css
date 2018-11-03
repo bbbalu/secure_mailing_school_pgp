@@ -1,0 +1,35 @@
+body {
+	background: #eee;
+	font-size: 16px;
+}
+
+.notification_box {
+	padding: 24px;
+	text-align: center;
+	background: #f44336;
+	font: 1em;
+	color: #FFF;
+}
+.notification_box h3 {
+	margin: 0 0 .3em 0;
+	padding: 0;
+	text-transform: uppercase;
+}
+
+.generates {
+	padding: 1em 0;
+}	
+.generates .col {
+	text-align: center;	
+}
+.keyarea textarea {
+	height: 250px;
+}
+#noKeyNotification,
+#regenerateKeypairsNotification {
+	display: none;
+}
+
+.basic_padding {
+	padding: 24px;
+}

@@ -1,0 +1,107 @@
+<div class="keygen">
+
+	<div class="notification_box" id="noKeyNotification">
+		<h3>Notification</h3>
+		<div>
+			You don't have any keys yet. Please generate your keys to start use the application.
+		</div>
+	</div>
+
+
+	<div class="notification_box" id="regenerateKeypairsNotification">
+		<h3>Regenerate keypairs</h3>
+		<div>
+			Are you sure, you want to regenerate your keys?<br />This action will rewrite your private key so you won't be able to read your mails encrypted by your previous public key.
+			<br/>
+			<br/>
+			<div class="row">
+				<div class="col s12">
+					<button class="btn waves-effect waves-light" type="submit" name="action" id="regenerateKeypairs">I'm sure to regenerate my keypairs
+						<i class="material-icons right">error</i>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="generates row">
+		<div class="col s4">
+			<button class="btn waves-effect waves-light" type="submit" name="action" id="createKeypairs" disabled>Create keypairs
+				<i class="material-icons right">add</i>
+			</button>
+		</div>
+		<div class="col s4">
+			<button class="btn waves-effect waves-light" type="submit" name="action" id="revokePublicKey">Revoke public key
+				<i class="material-icons right">block</i>
+			</button>
+		</div>
+		<div class="col s4">
+			<button class="btn waves-effect waves-light red" type="submit" name="action" id="regenerateKeypairsBegin">Regenerate keypairs
+				<i class="material-icons right">error</i>
+			</button>
+		</div>
+	</div>
+
+
+	<div class="row white keyarea">
+		<div class="input-field col s12">
+			<textarea id="privkey" class="materialize-textarea" readonly></textarea>
+			<label for="textarea1" class="active">Private key</label>
+		</div>
+	</div>
+	<div class="row white keyarea">
+		<div class="input-field col s12">
+			<textarea id="pubkey" class="materialize-textarea" readonly></textarea>
+			<label for="textarea1" class="active">Public key</label>
+		</div>
+	</div>
+	<div class="row white keyarea">
+		<div class="input-field col s12">
+			<textarea id="revocationCertificate" class="materialize-textarea" readonly></textarea>
+			<label for="textarea1" class="active">Signature key</label>
+		</div>
+	</div>
+
+	<script>
+		// Test key exists
+		ipcRenderer.send('keygen:keyExists', true);
+
+		// Answer from application main -> true: we have keys, false: we have to generate new keys
+		ipcRenderer.on('keygen:keyExists', function(e, data) {
+			if (data == false) {
+				$('#noKeyNotification').css('display', 'block');
+				$('#createKeypairs').prop('disabled', false);
+			} else {
+				$('#noKeyNotification').css('display', 'none');
+				$('#createKeypairs').prop('disabled', true);
+
+				ipcRenderer.send('keygen:showKeys', true);
+			}
+		});
+
+		// extensions/scripts.js have to be loaded before
+		$("#createKeypairs").click(function(e) {
+			e.preventDefault();
+			ipcRenderer.send('keygen:createKeypairs', {username: 'test', passphrase: 'testtest'});
+		});
+
+		ipcRenderer.on('keygen:showKeys', function(e, data){
+			$('#noKeyNotification').css('display', 'none');
+			$('#createKeypairs').prop('disabled', true);
+			
+			$('#privkey').val(data.privateKeyArmored);
+			$('#pubkey').val(data.publicKeyArmored);
+			$('#revocationCertificate').val(data.revocationCertificate);
+		});
+
+		$("#regenerateKeypairsBegin").click(function(e) {
+			$('#regenerateKeypairsNotification').slideDown();
+		});
+
+		$("#regenerateKeypairs").click(function(e) {
+			e.preventDefault();
+			ipcRenderer.send('keygen:createKeypairs', {username: 'test', passphrase: 'testtest'});
+			$('#regenerateKeypairsNotification').slideUp();
+		});
+	</script>
+</div>

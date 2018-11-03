@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Subpage</title>
+</head>
+<body>
+
+	<h1>My subpage</h1>
+
+	<a href="file://main.html"></a>
+
+
+	<script>
+		
+		const electron = require('electron');
+		const {ipcRenderer} = electron;
+
+		ipcRenderer.on('item:sample', function(e, data) {
+			// Do something with data
+			// Data always cames from nodeJS app not from sub HTMLs
+
+		});
+
+	</script>
+</body>
+</html>
