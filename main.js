@@ -29,7 +29,7 @@ app.on('closed', function(){
 	app = null
 });
 
-// Listen fot app to be ready
+// Listen for app to be ready
 app.on('ready', function(){
 	// Create new window
 	mainWindow = new BrowserWindow({

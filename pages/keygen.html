@@ -92,6 +92,8 @@
 			$('#privkey').val(data.privateKeyArmored);
 			$('#pubkey').val(data.publicKeyArmored);
 			$('#revocationCertificate').val(data.revocationCertificate);
+
+			disableNav = false;
 		});
 
 		$("#regenerateKeypairsBegin").click(function(e) {

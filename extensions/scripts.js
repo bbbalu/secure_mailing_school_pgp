@@ -10,20 +10,24 @@ const {ipcRenderer} = electron;
 // If true, all links in main menu are disabled
 var disableNav = false;
 
+// Save current page
+var current_page = '';
+var keygen_page = 'keygen.html';
+
 // Test key exists
 ipcRenderer.send('keygen:keyExists', true);
 
 // Answer from application main -> true: we have keys, false: we have to generate new keys
 ipcRenderer.on('keygen:keyExists', function(e, data) {
+
+	// If we are not on keygen page, test the key existence
 	if (data == false) {
 		disableNav = true;
-		changePage('keygen.html');
+		if (current_page != keygen_page) changePage(keygen_page);
 	}
 	else {
-
+		disableNav = false;
 	}
-	// Do something with data
-	// Data always cames from nodeJS app not from sub HTMLs
 
 });
 
@@ -51,9 +55,13 @@ $("nav a").click(function(e) {
 
 
 function changePage(htmlTo) {
+	// If we are on selected page do nothing
+	//if (current_page == htmlTo) return;
+
 	// Inform the main controller about the page changing
 	$("#page_content").load("./pages/"+htmlTo, function() {
 		ipcRenderer.send('pages:loadedPageChanged', htmlTo);
+		current_page = htmlTo;
 	});
 }
 
