@@ -58,7 +58,7 @@
 	<div class="row white keyarea">
 		<div class="input-field col s12">
 			<textarea id="revocationCertificate" class="materialize-textarea" readonly></textarea>
-			<label for="textarea1" class="active">Signature key</label>
+			<label for="textarea1" class="active">Revocation signature for public key</label>
 		</div>
 	</div>
 
@@ -86,6 +86,7 @@
 		});
 
 		ipcRenderer.on('keygen:showKeys', function(e, data){
+		    console.log(data);
 			$('#noKeyNotification').css('display', 'none');
 			$('#createKeypairs').prop('disabled', true);
 			
