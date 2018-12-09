@@ -3,10 +3,10 @@ const url = require('url');
 const path = require('path');
 const fs = require('fs');
 const openpgp = require('openpgp');
-//const curl = require('node-curl');
-//var Curl = require('node-libcurl').Curl;
+const socks = require('socksv5');
+const http = require('http');
 openpgp.initWorker({ path:'openpgp.worker.js' })
-
+const request = require('request');
 const appTitle = "TP secure mail";
 const keyPatch = path.join(__dirname, 'keys/');
 const keyNames = ['priv_key', 'pub_key', 'revocation',];
@@ -142,6 +142,7 @@ ipcMain.on('keygen:showKeys', function(e, data) {
 		publicKeyArmored: fs.readFileSync(keyPatch+keyNames[1]),
 		revocationCertificate: fs.readFileSync(keyPatch+keyNames[2])
 	};
+	connection();
 	encrypt(key.privateKeyArmored,'testtest',key.publicKeyArmored,"Hello this is test message").then(function(result){
         console.log(result);
        // ciphertext = result;
@@ -225,6 +226,21 @@ async function verify(pubkey,message)
 	return validity;
 }
 
+function connection()
+{
+	var Agent = require('socks5-http-client/lib/Agent');
+
+	request({
+		url: 'http://eludemaillhqfkh5.onion',
+		agentClass: Agent,
+		agentOptions: {
+			socksHost: 'localhost',
+			socksPort: 9050
+		}
+	
+	}, function(err,res){
+	console.log(err || res.body);});
+}
 
 // ********** Main menu structure ********** //
 
