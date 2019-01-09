@@ -189,6 +189,22 @@ async function encrypt(privkey,passphrase,pubkey, message) {
 	return encrypted;
 }
 
+async function encryptBinary(privkey,passphrase,pubkey, filePath) {
+    //openpgp.readArmored(pubkey);
+    var privKeyObj = (await openpgp.key.readArmored(privkey)).keys[0];
+    var publicKeys = (await openpgp.key.readArmored(pubkey)).keys;
+    await privKeyObj.decrypt(passphrase)
+	var readStream = fs.createReadStream(filePath)
+    console.log(publicKeys);
+    var options = {
+        message: openpgp.message.fromBinary(readStream),
+        publicKeys: publicKeys,
+        privateKey: privKeyObj
+    }
+    const encrypted = await openpgp.encrypt(options);
+    return encrypted;
+}
+
 async function decrypt(privkey,passphrase,message,)
 {
     privKeyObj = (await openpgp.key.readArmored(privkey)).keys[0];
@@ -201,6 +217,23 @@ async function decrypt(privkey,passphrase,message,)
     var plaintext = await openpgp.stream.readToEnd(decrypted.data);
     return(plaintext);
 }
+
+async function decrypt(privkey,passphrase,message,filePath)
+{
+    privKeyObj = (await openpgp.key.readArmored(privkey)).keys[0];
+    await privKeyObj.decrypt(passphrase);
+    var options = {
+        message: await openpgp.message.readArmored(message),
+        privateKeys: [privKeyObj]
+    }
+    var decrypted = await openpgp.decrypt(options);
+    var plaintext = await openpgp.stream.readToEnd(decrypted.data);
+    var wstream = fs.createWriteStream(filePath)
+	wstream.write(plaintext)
+	wstream.close()
+   // return(plaintext);
+}
+
 
 async function sign(privkey, passphrase, message) {
     var privKeyObj = (await openpgp.key.readArmored(privkey)).keys[0];
