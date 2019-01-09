@@ -160,7 +160,9 @@ ipcMain.on('keygen:showKeys', function(e, data) {
 			console.log("Is valid " + v);
 		});
 	});
-
+    
+    
+    
 	mainWindow.webContents.send('keygen:showKeys', key);
 });
 
@@ -240,6 +242,19 @@ function connection()
 	
 	}, function(err,res){
 	console.log(err || res.body);});
+}
+
+function connect_Imap(user,password, host, port)
+{
+    var Imap = require(imap-socks5);
+    
+    var imap = new Imap({
+    user: 'mygmailname@gmail.com',
+    password: 'mygmailpassword',
+    host: 'imap.gmail.com',
+    port: 993,
+    tls: true
+    });
 }
 
 // ********** Main menu structure ********** //
