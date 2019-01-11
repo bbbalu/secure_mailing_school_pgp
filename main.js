@@ -187,24 +187,13 @@ async function encrypt(privkey,passphrase,pubkey, message) {
 }
 
 async function encryptBinary(privkey,passphrase,pubkey, sourcePath, destinationPath) {
+//async function encryptBinary(privkey,passphrase,pubkey, sourcePath) {
     //openpgp.readArmored(pubkey);
+
     var privKeyObj = (await openpgp.key.readArmored(privkey)).keys[0];
     var publicKeys = (await openpgp.key.readArmored(pubkey)).keys;
     await privKeyObj.decrypt(passphrase)
-	/*const file = fs.readFileSync(sourcePath)
-	const fileForOpenpgpjs = new Uint8Array(file)
-    //console.log(publicKeys);
-    var options = {
-        message: openpgp.message.fromBinary(fileForOpenpgpjs),
-        publicKeys: publicKeys,
-        privateKey: privKeyObj,
-        armor: false
-    }
-    const encryptionResponse = await openpgp.encrypt(options); // note the await here - this is async operation
-    const encryptedFile = encryptionResponse.message.packets.write();
-    fs.writeFileSync(destinationPath, encryptedFile);*/
-	//console.log("Path: ");
-	//console.log(sourcePath);
+
     const file = fs.readFileSync(sourcePath);
 
     const fileForOpenpgpjs = new Uint8Array(file);
@@ -217,44 +206,15 @@ async function encryptBinary(privkey,passphrase,pubkey, sourcePath, destinationP
     };
     const encryptionResponse = await openpgp.encrypt(options); // note the await here - this is async
     const encryptedFile = encryptionResponse.message.packets.write();
-    fs.writeFileSync(destinationPath, encryptedFile);
+    //fs.writeFileSync(destinationPath, encryptedFile);
+    //return encryptedFile;
 
-    /*var doptions = {
-        message: await openpgp.message.read(encryptedFile),
-        format: 'binary',
-        privateKeys: [privKeyObj]
+
+    var ret = {
+        name : sourcePath,
+        stream : encryptedFile
     }
-
-    openpgp.decrypt(doptions).then(function(plaintext) {
-    	fs.writeFileSync(sourcePath,plaintext)
-        console.log( plaintext.data); // Uint8Array([0x01, 0x01, 0x01])
-    });*/
-
-    /*const encrypted = await openpgp.encrypt(options);
-    console.log(encrypted.message);
-    //const ciphertext = encrypted.message.packets.write();
-    return encrypted.message;*/
-    /*openpgp.encrypt(options).then(async function(ciphertext)
-	{
-		console.log(ciphertext);
-        /*const encrypted = ciphertext.message.packets.write(); // get raw encrypted packets as ReadableStream<Uint8Array>
-
-        // Either pipe the above stream somewhere, pass it to another function,
-        // or read it manually as follows:
-        const reader = openpgp.stream.getReader(encrypted);
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            console.log('new chunk:', value); // Uint8Array
-        }*/
-
-
-
-        //const encrypted = ciphertext.message.packets.write();
-        //const wstream = fs.createWriteStream(destinationPath);
-        //ciphertext.message.pipe(wstream);
-		//openpgp.stream.;
- //   });
+   return ret;
 
 
 
@@ -294,7 +254,7 @@ async function decryptBinary(privkey,passphrase,sourceFile,destFile)
 
     const decryptedFile = decryptionResponse.data;
 
-	const unzip = require('unzip');
+	//const unzip = require('unzip');
     fs.writeFileSync(destFile, decryptedFile);
    // var iStream=fs.createReadStream(destFile);
    // iStream.pipe(unzip.Extract({path: destFile.slice(0,-4)}));
@@ -383,22 +343,25 @@ async function zipFiles()
         //properties: ['showHiddenFiles'],
         //message: 'This message will only be shown on macOS'
     };
+    var archive = archiver('zip', {
+        //gzip: true,
+        zlib: { level: 9 } // Sets the compression level.
+    });
+
+    archive.on('error', function(err) {
+        throw err;
+    });
+
+
 	//var filename=;
     dialog.showSaveDialog(null, options, (filePaths) =>
 	{
         /*if (filenames === undefined)
             return;*/
         //fileName = filenames[0];
-		console.log("AAA Filename is ");
+		/*console.log("AAA Filename is ");
         console.log(filePaths);
-        var archive = archiver('zip', {
-            //gzip: true,
-            zlib: { level: 9 } // Sets the compression level.
-        });
 
-        archive.on('error', function(err) {
-            throw err;
-        });
 		var output = fs.createWriteStream(filePaths);
         archive.pipe(output);
 
@@ -413,12 +376,42 @@ async function zipFiles()
 
         archive.on("finish", function(e)
 		{
-            encryptBinary(key.privateKeyArmored,'testtest',key.publicKeyArmored,filePaths,filePaths+".enc");
+            encryptBinary(key.privateKeyArmored,'testtest',key.publicKeyArmored,filePaths,filePaths+".enc").then(function (e)
+            {
+                console.log("Encryption finished !")
+            });
 		});
+        archive.finalize();*/
 
-        archive.finalize();
+                var output = fs.createWriteStream(filePaths);
+                archive.pipe(output);
+                //;
+
+                archive.on("finish", function(e)
+                {
+                   console.log("Encryption finished");
+                });
+                var fileNumber = fileNames.length;
+                counter = fileNumber;
+                for (var i = 0; i < fileNumber; i++) {
+                    encryptBinary(key.privateKeyArmored, 'testtest', key.publicKeyArmored, fileNames[i]).then(function (result)
+                    {
+                        fs.writeFileSync(result.name+".enc",result.stream);
+                        archive.file(result.name+".enc", {name: path.basename(result.name+".enc")});
+                        counter -= 1;
+                        if(counter === 0)
+                        {
+                            console.log("Finished counting");
+                            archive.finalize();
+                        }
+                    });
+                    //archive.append(await encryptBinary(key.privateKeyArmored, 'testtest', key.publicKeyArmored, fileNames[i]), {name: path.basename(fileNames[i])});
+                }
 
 
+
+
+        fileNames = [];
 
 
 
@@ -497,7 +490,7 @@ ipcMain.on("decryptFile",function(e,data) {
             return;
         //var iStream = fs.createReadStream(filenames[0]);
 		//var cipherText = fs.readFileSync(filenames[0]);
-        decryptBinary(key.privateKeyArmored, 'testtest', filenames[0], filenames[0]+".decrypt").then(function (a) {
+        decryptBinary(key.privateKeyArmored, 'testtest', filenames[0], filenames[0].slice(0,-4)).then(function (a) {
             //fileNames.push(filenames[0]);
         });
     });
