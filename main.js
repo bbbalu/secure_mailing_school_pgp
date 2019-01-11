@@ -5,13 +5,25 @@ const fs = require('fs');
 const openpgp = require('openpgp');
 const socks = require('socksv5');
 const http = require('http');
+const https = require('https');
 openpgp.initWorker({ path:'openpgp.worker.js' })
 const request = require('request');
 const appTitle = "TP secure mail";
 const keyPatch = path.join(__dirname, 'keys/');
 const keyNames = ['priv_key', 'pub_key', 'revocation',];
+const archiver = require('archiver');
+
+const socksConfig = {
+    proxyHost: 'localhost',
+    proxyPort: 9050,
+    auths: [ socks.auth.None() ]
+};
 
 const {app, BrowserWindow, Menu, ipcMain} = electron;
+
+
+// Or with ECMAScript 6
+const {dialog} = require('electron');
 
 let mainWindow, subWindow;
 
@@ -137,21 +149,43 @@ ipcMain.on('keygen:createKeypairs', function(e, data) {
 
 // Show keys
 ipcMain.on('keygen:showKeys', function(e, data) {
-	var key = {
+
+   // let content = "Some text to save into the file";
+
+// You can obviously give a direct path without use the dialog (C:/Program Files/path/myfileexample.txt)
+   /* dialog.showSaveDialog((fileName) => {
+        if (fileName === undefined){
+            console.log("You didn't save the file");
+            return;
+        }
+
+        // fileName is a string that contains the path and filename created in the save file dialog.
+        fs.writeFile(fileName, content, (err) => {
+            if(err){
+                console.log("An error ocurred creating the file "+ err.message)
+            }
+
+            console.log("The file has been succesfully saved");
+        });
+    });*/
+
+
+
+    /*var key = {
 		privateKeyArmored: fs.readFileSync(keyPatch+keyNames[0]),
 		publicKeyArmored: fs.readFileSync(keyPatch+keyNames[1]),
 		revocationCertificate: fs.readFileSync(keyPatch+keyNames[2])
-	};
-	connection();
-	encrypt(key.privateKeyArmored,'testtest',key.publicKeyArmored,"Hello this is test message").then(function(result){
+	};*/
+	//connection();
+	/*encrypt(key.privateKeyArmored,'testtest',key.publicKeyArmored,"Hello this is test message").then(function(result){
         console.log(result);
        // ciphertext = result;
         decrypt(key.privateKeyArmored,'testtest',result.data,).then(function (a)
 		{
 			console.log(a);
 		});
-    });
-	sign(key.privateKeyArmored,"testtest","Hello world").then(function (signedtext)
+    });*/
+	/*sign(key.privateKeyArmored,"testtest","Hello world").then(function (signedtext)
 	{
 		console.log("THIS IS SIGNED TEXT");
 		console.log(signedtext);
@@ -159,7 +193,7 @@ ipcMain.on('keygen:showKeys', function(e, data) {
 		{
 			console.log("Is valid " + v);
 		});
-	});
+	});*/
     
     
     
@@ -189,23 +223,81 @@ async function encrypt(privkey,passphrase,pubkey, message) {
 	return encrypted;
 }
 
-async function encryptBinary(privkey,passphrase,pubkey, filePath) {
+async function encryptBinary(privkey,passphrase,pubkey, sourcePath, destinationPath) {
     //openpgp.readArmored(pubkey);
     var privKeyObj = (await openpgp.key.readArmored(privkey)).keys[0];
     var publicKeys = (await openpgp.key.readArmored(pubkey)).keys;
     await privKeyObj.decrypt(passphrase)
-	var readStream = fs.createReadStream(filePath)
-    console.log(publicKeys);
+	/*const file = fs.readFileSync(sourcePath)
+	const fileForOpenpgpjs = new Uint8Array(file)
+    //console.log(publicKeys);
     var options = {
-        message: openpgp.message.fromBinary(readStream),
+        message: openpgp.message.fromBinary(fileForOpenpgpjs),
         publicKeys: publicKeys,
-        privateKey: privKeyObj
+        privateKey: privKeyObj,
+        armor: false
     }
-    const encrypted = await openpgp.encrypt(options);
-    return encrypted;
+    const encryptionResponse = await openpgp.encrypt(options); // note the await here - this is async operation
+    const encryptedFile = encryptionResponse.message.packets.write();
+    fs.writeFileSync(destinationPath, encryptedFile);*/
+	//console.log("Path: ");
+	//console.log(sourcePath);
+    const file = fs.readFileSync(sourcePath);
+
+    const fileForOpenpgpjs = new Uint8Array(file);
+    console.log("File : ");
+    console.log(fileForOpenpgpjs);
+    const options = {
+        message :  openpgp.message.fromBinary(file),
+        publicKeys: publicKeys,
+        armor: false
+    };
+    const encryptionResponse = await openpgp.encrypt(options); // note the await here - this is async
+    const encryptedFile = encryptionResponse.message.packets.write();
+    fs.writeFileSync(destinationPath, encryptedFile);
+
+    /*var doptions = {
+        message: await openpgp.message.read(encryptedFile),
+        format: 'binary',
+        privateKeys: [privKeyObj]
+    }
+
+    openpgp.decrypt(doptions).then(function(plaintext) {
+    	fs.writeFileSync(sourcePath,plaintext)
+        console.log( plaintext.data); // Uint8Array([0x01, 0x01, 0x01])
+    });*/
+
+    /*const encrypted = await openpgp.encrypt(options);
+    console.log(encrypted.message);
+    //const ciphertext = encrypted.message.packets.write();
+    return encrypted.message;*/
+    /*openpgp.encrypt(options).then(async function(ciphertext)
+	{
+		console.log(ciphertext);
+        /*const encrypted = ciphertext.message.packets.write(); // get raw encrypted packets as ReadableStream<Uint8Array>
+
+        // Either pipe the above stream somewhere, pass it to another function,
+        // or read it manually as follows:
+        const reader = openpgp.stream.getReader(encrypted);
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            console.log('new chunk:', value); // Uint8Array
+        }*/
+
+
+
+        //const encrypted = ciphertext.message.packets.write();
+        //const wstream = fs.createWriteStream(destinationPath);
+        //ciphertext.message.pipe(wstream);
+		//openpgp.stream.;
+ //   });
+
+
+
 }
 
-async function decrypt(privkey,passphrase,message,)
+async function decrypt(privkey,passphrase,message)
 {
     privKeyObj = (await openpgp.key.readArmored(privkey)).keys[0];
     await privKeyObj.decrypt(passphrase);
@@ -218,19 +310,40 @@ async function decrypt(privkey,passphrase,message,)
     return(plaintext);
 }
 
-async function decrypt(privkey,passphrase,message,filePath)
+async function decryptBinary(privkey,passphrase,sourceFile,destFile)
 {
+	console.log(sourceFile)
+	console.log(destFile)
     privKeyObj = (await openpgp.key.readArmored(privkey)).keys[0];
     await privKeyObj.decrypt(passphrase);
+
+    const file = fs.readFileSync(sourceFile);
+
+    const fileForOpenpgpjs = new Uint8Array(file);
+
     var options = {
-        message: await openpgp.message.readArmored(message),
+        message: await openpgp.message.read(fileForOpenpgpjs),
+        format: 'binary',
         privateKeys: [privKeyObj]
     }
-    var decrypted = await openpgp.decrypt(options);
-    var plaintext = await openpgp.stream.readToEnd(decrypted.data);
-    var wstream = fs.createWriteStream(filePath)
-	wstream.write(plaintext)
-	wstream.close()
+
+    const decryptionResponse = await openpgp.decrypt(options);
+
+    const decryptedFile = decryptionResponse.data;
+
+	const unzip = require('unzip');
+    fs.writeFileSync(destFile, decryptedFile);
+   // var iStream=fs.createReadStream(destFile);
+   // iStream.pipe(unzip.Extract({path: destFile.slice(0,-4)}));
+    //const decrypted = await openpgp.decrypt(options);
+    //const plaintext = await openpgp.stream.readToEnd(decrypted.data);
+   // var plaintext = await openpgp.stream.readToEnd(decrypted.data);
+    //var wstream = fs.createWriteStream(filePath)
+	//wstream.write(plaintext)
+	//wstream.close()
+	//await openpgp.stream.pipe(decrypted.data,wstream)
+	//fs.writeFileSync(filePath,plaintext);
+	//return plaintext;
    // return(plaintext);
 }
 
@@ -261,7 +374,170 @@ async function verify(pubkey,message)
 	return validity;
 }
 
-function connection()
+
+var fileNames = [];
+
+function addFileToZip()
+{
+    console.log("yes");
+    dialog.showOpenDialog({properties: ['openFile']},function(filenames) {
+        if (filenames === undefined)
+            return;
+
+        fileNames.push(filenames[0]);
+    });
+    /*dialog.showMessageBox({ message: "Súbor pridaný na šifrovanie",
+
+        buttons: ["OK"] });*/
+
+
+}
+
+
+
+async function zipFiles()
+{
+    var path = require("path");
+	console.log("I am here");
+    var fileNumber = fileNames.length;
+    for (var i =0; i< fileNumber; i++)
+    {
+        console.log(fileNames[i]);
+     //   archive.file(fileNames[i]);
+    }
+    const options = {
+        //title: 'Open a file or folder',
+        //defaultPath: '/path/to/something/',
+        //buttonLabel: 'Do it',
+        /*filters: [
+          { name: 'xml', extensions: ['xml'] }
+        ],*/
+        //properties: ['showHiddenFiles'],
+        //message: 'This message will only be shown on macOS'
+    };
+	//var filename=;
+    dialog.showSaveDialog(null, options, (filePaths) =>
+	{
+        /*if (filenames === undefined)
+            return;*/
+        //fileName = filenames[0];
+		console.log("AAA Filename is ");
+        console.log(filePaths);
+        var archive = archiver('zip', {
+            //gzip: true,
+            zlib: { level: 9 } // Sets the compression level.
+        });
+
+        archive.on('error', function(err) {
+            throw err;
+        });
+		var output = fs.createWriteStream(filePaths);
+        archive.pipe(output);
+
+        var fileNumber = fileNames.length;
+        for (var i =0; i< fileNumber; i++)
+        {
+        	console.log(fileNames[i]);
+            archive.file(fileNames[i],{ name: path.basename(fileNames[i]) });
+        }
+
+        fileNames = [];
+
+        archive.on("finish", function(e)
+		{
+            encryptBinary(key.privateKeyArmored,'testtest',key.publicKeyArmored,filePaths,filePaths+".enc");
+		});
+
+        archive.finalize();
+
+        var key = {
+            privateKeyArmored: fs.readFileSync(keyPatch+keyNames[0]),
+            publicKeyArmored: fs.readFileSync(keyPatch+keyNames[1]),
+            revocationCertificate: fs.readFileSync(keyPatch+keyNames[2])
+        };
+
+
+
+		return filePaths;
+
+	});
+    //var output = fs.createWriteStream('./example.zip')
+}
+
+async function uploadFile(filePath,token)
+{
+    var Agent = require('socks5-http-client/lib/Agent');
+
+    var url = 'https://myfile.is/api/upload';
+    if ( typeof token !== 'undefined' && token )
+    {
+        url += token;
+    }
+
+    const formData = {
+        file : {
+            value: fs.createReadStream(filePath),
+            options : {filename : path.basename(filePath)}
+        }
+    }
+
+    const options = {
+        url: url,
+        agentClass: Agent,
+        agentOptions: {
+            socksHost: 'localhost', // Defaults to 'localhost'.
+            socksPort: 9050 // Defaults to 1080.
+        },
+        formData: formData
+    }
+
+    request.post(options, function optionalCallback(err, httpResponse, body){
+        if(err)
+        {
+            return console.error('upload failed:', err);
+        }
+        console.log('Upload successful!  Server responded with:', body);
+    })
+}
+
+ipcMain.on("addFileToZip",function(e,data)
+{
+	console.log("hell yeah");
+	addFileToZip();
+});
+
+ipcMain.on("zipFiles",function(e,data)
+{
+	zipFiles().then(function(filename)
+	{
+		if(filename === undefined)
+			return;
+		console.log("fileName is ");
+		console.log(filename);
+
+
+	});
+})
+
+ipcMain.on("decryptFile",function(e,data) {
+    var key = {
+        privateKeyArmored: fs.readFileSync(keyPatch + keyNames[0]),
+        publicKeyArmored: fs.readFileSync(keyPatch + keyNames[1]),
+        revocationCertificate: fs.readFileSync(keyPatch + keyNames[2])
+    };
+
+
+    dialog.showOpenDialog({properties: ['openFile']}, function (filenames) {
+        if (filenames === undefined)
+            return;
+        //var iStream = fs.createReadStream(filenames[0]);
+		//var cipherText = fs.readFileSync(filenames[0]);
+        decryptBinary(key.privateKeyArmored, 'testtest', filenames[0], filenames[0]+".decrypt").then(function (a) {
+            //fileNames.push(filenames[0]);
+        });
+    });
+})
+/*function connection()
 {
 	var Agent = require('socks5-http-client/lib/Agent');
 
@@ -275,11 +551,11 @@ function connection()
 	
 	}, function(err,res){
 	console.log(err || res.body);});
-}
+}*/
 
 function connect_Imap(user,password, host, port)
 {
-    var Imap = require(imap-socks5);
+    var Imap = require('imap-socks5');
     
     var imap = new Imap({
     user: 'mygmailname@gmail.com',

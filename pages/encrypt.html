@@ -1,0 +1,32 @@
+<div class="white basic_padding">
+
+
+
+<button id="addZipButton">Pridaj súbor na šifrovanie</button>
+    <button id="zipButton"> Zašifruj zvolené súbory</button> <br>
+    <button id="decryptButton">Dešifruj súbor</button>
+
+    <script>
+        //const electron = require('electron');
+        //const {dialog} = require('electron').remote;
+
+
+        $("#addZipButton").click(function(e)
+        {
+            e.preventDefault();
+            ipcRenderer.send("addFileToZip",true);
+        });
+
+        $("#zipButton").click(function(e)
+        {
+            e.preventDefault();
+            ipcRenderer.send("zipFiles",true);
+        });
+
+        $("#decryptButton").click(function(e)
+        {
+            e.preventDefault();
+            ipcRenderer.send("decryptFile",true);
+        });
+    </script>
+</div>
