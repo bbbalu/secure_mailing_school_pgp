@@ -152,50 +152,13 @@ ipcMain.on('keygen:showKeys', function(e, data) {
 
    // let content = "Some text to save into the file";
 
-// You can obviously give a direct path without use the dialog (C:/Program Files/path/myfileexample.txt)
-   /* dialog.showSaveDialog((fileName) => {
-        if (fileName === undefined){
-            console.log("You didn't save the file");
-            return;
-        }
-
-        // fileName is a string that contains the path and filename created in the save file dialog.
-        fs.writeFile(fileName, content, (err) => {
-            if(err){
-                console.log("An error ocurred creating the file "+ err.message)
-            }
-
-            console.log("The file has been succesfully saved");
-        });
-    });*/
 
 
-
-    /*var key = {
-		privateKeyArmored: fs.readFileSync(keyPatch+keyNames[0]),
-		publicKeyArmored: fs.readFileSync(keyPatch+keyNames[1]),
-		revocationCertificate: fs.readFileSync(keyPatch+keyNames[2])
-	};*/
-	//connection();
-	/*encrypt(key.privateKeyArmored,'testtest',key.publicKeyArmored,"Hello this is test message").then(function(result){
-        console.log(result);
-       // ciphertext = result;
-        decrypt(key.privateKeyArmored,'testtest',result.data,).then(function (a)
-		{
-			console.log(a);
-		});
-    });*/
-	/*sign(key.privateKeyArmored,"testtest","Hello world").then(function (signedtext)
-	{
-		console.log("THIS IS SIGNED TEXT");
-		console.log(signedtext);
-        verify(key.publicKeyArmored,signedtext).then(function (v)
-		{
-			console.log("Is valid " + v);
-		});
-	});*/
-    
-    
+    var key = {
+        privateKeyArmored: fs.readFileSync(keyPatch+keyNames[0]),
+        publicKeyArmored: fs.readFileSync(keyPatch+keyNames[1]),
+        revocationCertificate: fs.readFileSync(keyPatch+keyNames[2])
+    };
     
 	mainWindow.webContents.send('keygen:showKeys', key);
 });
