@@ -397,6 +397,11 @@ function addFileToZip()
 
 async function zipFiles()
 {
+    var key = {
+        privateKeyArmored: fs.readFileSync(keyPatch+keyNames[0]),
+        publicKeyArmored: fs.readFileSync(keyPatch+keyNames[1]),
+        revocationCertificate: fs.readFileSync(keyPatch+keyNames[2])
+    };
     var path = require("path");
 	console.log("I am here");
     var fileNumber = fileNames.length;
@@ -450,11 +455,7 @@ async function zipFiles()
 
         archive.finalize();
 
-        var key = {
-            privateKeyArmored: fs.readFileSync(keyPatch+keyNames[0]),
-            publicKeyArmored: fs.readFileSync(keyPatch+keyNames[1]),
-            revocationCertificate: fs.readFileSync(keyPatch+keyNames[2])
-        };
+
 
 
 
@@ -466,6 +467,7 @@ async function zipFiles()
 
 async function uploadFile(filePath,token)
 {
+    var path = require("path");
     var Agent = require('socks5-http-client/lib/Agent');
 
     var url = 'https://myfile.is/api/upload';
