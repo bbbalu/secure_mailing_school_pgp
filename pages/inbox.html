@@ -1,5 +1,6 @@
+
 <div class="white basic_padding">
-	<table class="striped highlight">
+	<table class="striped highlight" id="inboxTable">
 		<thead>
 			<tr>
 				<th>From</th>
@@ -8,32 +9,72 @@
 			</tr>
 		</thead>
 
-		<tbody>
-			<tr>
-				<td><strong>Alvin</strong></td>
-				<td>This is a test...</td>
-				<td>02.11.2018 14:31:03</td>
-			</tr>
-			<tr>
-				<td><strong>Alvin</strong></td>
-				<td>This is a test...</td>
-				<td>02.11.2018 14:31:03</td>
-			</tr>
-			<tr>
-				<td><strong>Alvin</strong></td>
-				<td>This is a test...</td>
-				<td>02.11.2018 14:31:03</td>
-			</tr>
-			<tr>
-				<td><strong>Alvin</strong></td>
-				<td>This is a test...</td>
-				<td>02.11.2018 14:31:03</td>
-			</tr>
-			<tr>
-				<td><strong>Alvin</strong></td>
-				<td>This is a test...</td>
-				<td>02.11.2018 14:31:03</td>
-			</tr>
-		</tbody>
-	</table>
+		<tbody style="overflow-y: scroll">
+		<!--<tr>
+            <td><strong>Alvin</strong></td>
+            <td>This is a test...</td>
+            <td>02.11.2018 14:31:03</td>
+        </tr>
+        <tr>
+            <td><strong>Alvin</strong></td>
+            <td>This is a test...</td>
+            <td>02.11.2018 14:31:03</td>
+        </tr>
+        <tr>
+            <td><strong>Alvin</strong></td>
+            <td>This is a test...</td>
+            <td>02.11.2018 14:31:03</td>
+        </tr>
+        <tr>
+            <td><strong>Alvin</strong></td>
+            <td>This is a test...</td>
+            <td>02.11.2018 14:31:03</td>
+        </tr>
+        <tr>
+            <td><strong>Alvin</strong></td>
+            <td>This is a test...</td>
+            <td>02.11.2018 14:31:03</td>
+        </tr> -->
+    </tbody>
+</table>
+	<textarea readonly id="mailText" rows="20"></textarea>
+	<script>
+        ipcRenderer.send("inbox",true);
+
+        ipcRenderer.on('inbox',function (e,data) {
+            console.log("I AM ADDING THINGS");
+            var tbody = $("#inboxTable tbody");
+            tbody.empty();
+            var inbox  = data;
+            var len = inbox.length;
+            for (var i=0; i< len; i++)
+            {
+                var tr = $("<tr>");
+
+                tr.data("folder",inbox[i].folder);
+                tr.data("attachments", inbox[i].attachments);
+                tr.data("index",i);
+                var td = $("<td>");
+                td.text(inbox[i].sender);
+                tr.append(td);
+                td = $("<td>");
+                td.text(inbox[i].subject);
+                tr.append(td);
+                td = $("<td>");
+                td.text(inbox[i].date);
+                tr.append(td);
+
+				tr.click(function (e)
+				{
+                    console.log("Clicked");
+                    console.log($(this).data("folder"));
+                    console.log($(this).data("attachments"));
+                    ipcRenderer.send("inbox:seeMail",$(this).data());
+				});
+                tbody.append(tr);
+            }
+
+        });
+
+	</script>
 </div>

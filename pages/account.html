@@ -1,0 +1,30 @@
+<div class="white basic_padding">
+
+    <div class="notification_box" id="noAccountNotification">
+        <h3>No account</h3>
+        <div>
+            You don't have an account on EludeMail. Please visit
+            <b> http://eludemaillhqfkh5.onion/</b> and create an account
+        </div>
+        <form id="accountForm">
+            <label>Username</label> <input type="text" name="nick" placeholder="username@elude.in"> <br>
+            <label>Password</label> <input type="password" name="password">
+            <input type="submit" value="Save account">
+        </form>
+    </div>
+</div>
+<script>
+    $('#accountForm').submit(function (e) {
+        e.preventDefault();
+        var userName = $('#accountForm input[name="nick"]').val();
+        var password = $('#accountForm input[name="password"]').val();
+        console.log("username is " + userName);
+        console.log("password is " + password);
+        var res = {
+            userName : userName,
+            password : password
+        }
+        ipcRenderer.send("accountCreated", res);
+        ipcRenderer.send('keygen:keyExists', true);
+    })
+</script>

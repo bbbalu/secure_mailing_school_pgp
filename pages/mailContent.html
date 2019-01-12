@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+    <!-- normal script imports etc  -->
+
+    <script type="text/javascript" src="../extensions/jquery/jquery-3.3.1.min.js"></script>
+    <!-- Insert this line after script imports -->
+    <script>if (window.module) module = window.module;</script>
+
+</head>
+<body>
+
+<div id="emailContent"></div>
+<div>
+    <div>Attachments</div>
+<div id="attachments"></div>
+</div>
+<script>
+    var sys = require('util');
+    var exec = require('child_process').exec;
+    function getCommandLine() {
+        switch (process.platform) {
+            case 'darwin' : return 'open';
+            case 'win32' : return 'start';
+            case 'win64' : return 'start';
+            default : return 'xdg-open';
+        }
+    }
+    const ipcRenderer = require('electron').ipcRenderer;
+    ipcRenderer.on('message', (event, message) => {
+        console.log(message); // logs out "Hello second window!"
+    })
+    //ipcRenderer.send("mailContent",true);
+
+    ipcRenderer.on("inbox:message", function (e,data) {
+        $("#emailContent").empty();
+        var p = $("<pre>");
+        p.css("overflow-y", "scroll");
+        p.text(data.text);
+        $("#emailContent").append(p);
+
+        $("#attachments").empty();
+        var attLength = data.attachments.length;
+        for(var i=0; i< attLength; i++)
+        {
+            var a = $("<a>");
+            a.attr("href",data.folder+data.attachments[i]);
+            a.text(data.folder+data.attachments[i]);
+            a.click(function (e) {
+                e.preventDefault();
+                console.log($(this).attr("href"));
+                exec(getCommandLine() + ' ' + $(this).attr("href"));
+            });
+            $("#attachments").append(a);
+            $("#attachments").append($("<br>"));
+        }
+        //console.log("COmmand is: ")
+        //console.log(getCommandLine());
+
+    })    
+
+    /*$(document).ready(function()
+    {
+        console.log("test");
+    })*/
+</script>
+</body>
+</html>

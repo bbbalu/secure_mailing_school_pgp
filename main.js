@@ -10,6 +10,8 @@ openpgp.initWorker({ path:'openpgp.worker.js' })
 const request = require('request');
 const appTitle = "TP secure mail";
 const keyPatch = path.join(__dirname, 'keys/');
+const profileDir = path.join(__dirname, 'profile/');
+const inboxDir = path.join(__dirname, 'inbox/');
 const keyNames = ['priv_key', 'pub_key', 'revocation',];
 const archiver = require('archiver');
 
@@ -75,10 +77,15 @@ app.on('ready', function(){
 
 function createSubWindow(name, windowFilename, width = 300, height = 200) {
 
+    if((subWindow !== undefined) && (subWindow !== null))
+    {
+        subWindow.close();
+    }
+
 	subWindow = new BrowserWindow({
 		width: width,
 		height: height,
-		title: appTitle
+        title: appTitle
 	});
 
 	// Load the html content
@@ -104,6 +111,16 @@ ipcMain.on('closeCommand', function(e, data) {
 ipcMain.on('keygen:keyExists', function(e, data) {
 	var existsBool = fs.existsSync(keyPatch+keyNames[0]) && fs.existsSync(keyPatch+keyNames[1]) && fs.existsSync(keyPatch+keyNames[2]);
 	mainWindow.webContents.send('keygen:keyExists', existsBool);
+});
+
+ipcMain.on('accountExists', function(e, data)
+{
+   var existsBool = fs.existsSync(profileDir+"profile.json");
+   mainWindow.webContents.send('accountExists',existsBool);
+});
+
+ipcMain.on('accountCreated', function (e,data) {
+   fs.writeFileSync(profileDir+"profile.json",JSON.stringify(data));
 });
 
 // Generate new key pairs
@@ -170,6 +187,40 @@ ipcMain.on('data:sample', function(e, item) {
 	mainWindow.webContents.send('item:add', item);
 });
 
+ipcMain.on("inbox", function (e,data) {
+    var checkbool = fs.existsSync(inboxDir+"inbox.json");
+    if(checkbool === true)
+    {
+        var inbox = JSON.parse(fs.readFileSync(inboxDir+"inbox.json"));
+        console.log("Inbox is alive");
+        console.log(inbox);
+        mainWindow.send('inbox', inbox);
+    }
+});
+
+ipcMain.on("inbox:seeMail", function(e,data)
+{
+    console.log(data);
+    var d = path.join(inboxDir+ data.folder + "/");
+    console.log(d);
+    var textFile = fs.readFileSync(d+".text.txt",'utf8');
+    var info = {
+        folder : d,
+        attachments: data.attachments,
+        text: textFile,
+        index : data.index
+    }
+    console.log(info);
+    createSubWindow("lol", "pages/mailContent.html");
+    subWindow.webContents.on('did-finish-load', () => {
+        subWindow.webContents.send('message', 'Hello second window!');
+        subWindow.webContents.send("inbox:message",info);
+    });
+});
+
+/*ipcMain.on("mailContent", function (e,data) {
+    console.log("lol");
+})*/
 
 async function encrypt(privkey,passphrase,pubkey, message) {
 	//openpgp.readArmored(pubkey);
@@ -490,7 +541,7 @@ ipcMain.on("decryptFile",function(e,data) {
             return;
         //var iStream = fs.createReadStream(filenames[0]);
 		//var cipherText = fs.readFileSync(filenames[0]);
-        decryptBinary(key.privateKeyArmored, 'testtest', filenames[0], filenames[0].slice(0,-4)).then(function (a) {
+        decryptBinary(key.privateKeyArmored, 'testtest', filenames[0], filenames[0]+".dec").then(function (a) {
             //fileNames.push(filenames[0]);
         });
     });
@@ -511,16 +562,25 @@ ipcMain.on("decryptFile",function(e,data) {
 	console.log(err || res.body);});
 }*/
 
+const mailLink = 'eludemaillhqfkh5.onion';
+const imapPort = 143;
+const smtpPort = 25;
+let imap;
 function connect_Imap(user,password, host, port)
 {
     var Imap = require('imap-socks5');
-    
-    var imap = new Imap({
-    user: 'mygmailname@gmail.com',
-    password: 'mygmailpassword',
-    host: 'imap.gmail.com',
-    port: 993,
+
+    imap = new Imap({
+    user: user,
+    password: password,
+    host: host,
+    port: port,
     tls: true
+    });
+
+    imap.on("ready",function()
+    {
+
     });
 }
 
