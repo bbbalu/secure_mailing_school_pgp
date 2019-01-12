@@ -12,6 +12,7 @@ const appTitle = "TP secure mail";
 const keyPatch = path.join(__dirname, 'keys/');
 const profileDir = path.join(__dirname, 'profile/');
 const inboxDir = path.join(__dirname, 'inbox/');
+const adressDir = path.join(__dirname,'adressbook/');
 const keyNames = ['priv_key', 'pub_key', 'revocation',];
 const archiver = require('archiver');
 
@@ -242,13 +243,73 @@ ipcMain.on("inbox:seeMail", function(e,data)
         index : data.index
     }*/
     console.log(info);
-    createSubWindow("lol", "pages/mailContent.html");
+    createSubWindow("lol", "pages/mailContent.html",
+        600,800);
     subWindow.webContents.on('did-finish-load', () => {
         subWindow.webContents.send('message', 'Hello second window!');
         subWindow.webContents.send("inbox:message",info);
     });
 });
 
+ipcMain.on("compose", function (e,data) {
+    createSubWindow("lol", "pages/sent.html",
+        600,800);
+});
+
+ipcMain.on("compose:getContacts", function(e, data)
+{
+    var existsBool = fs.existsSync(adressDir + "adressbook.json");
+    if(existsBool === true)
+    {
+        console.log("hey");
+        try{
+            var adressBook = JSON.parse(fs.readFileSync(adressDir + "adressbook.json"));
+            console.log(adressBook)
+            subWindow.webContents.send("compose:getContacts",adressBook);
+
+        }
+        catch (e) {
+            var adressBook = [];
+            fs.writeFileSync(adressDir + "adressbook.json",JSON.stringify(adresBook));
+            subWindow.webContents.send("compose:getContacts",adressBook);
+        }
+    }
+    else
+    {
+        var adressBook = [];
+        fs.writeFileSync(adressDir + "adressbook.json",JSON.stringify(adresBook));
+        subWindow.webContents.send("compose:getContacts",adressBook);
+
+    }
+});
+
+ipcMain.on("adressBook", function (e,data) {
+    var existsBool = fs.existsSync(adressDir + "adressbook.json");
+    if(existsBool === true)
+    {
+        console.log("hey");
+        try{
+            var adressBook = JSON.parse(fs.readFileSync(adressDir + "adressbook.json"));
+            console.log(adressBook)
+            mainWindow.webContents.send("adressBook",adressBook);
+
+        }
+        catch (e) {
+            var adressBook = [];
+            fs.writeFileSync(adressDir + "adressbook.json",JSON.stringify(adresBook));
+            mainWindow.webContents.send("adressBook",adressBook);
+        }
+    }
+    else
+    {
+        var adressBook = [];
+        fs.writeFileSync(adressDir + "adressbook.json",JSON.stringify(adresBook));
+        mainWindow.webContents.send("adressBook",adressBook);
+
+    }
+
+
+})
 /*ipcMain.on("mailContent", function (e,data) {
     console.log("lol");
 })*/

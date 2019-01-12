@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+    <!-- normal script imports etc  -->
+    <link rel="stylesheet" href="../extensions/materialize/css/materialize.min.css">
+    <link rel="stylesheet" href="../extensions/design.css">
+    <script type="text/javascript" src="../extensions/jquery/jquery-3.3.1.min.js"></script>
+     <script type="text/javascript" src="../extensions/materialize/js/materialize.js"></script>
+    <script src="../extensions/nicEdit/nicEdit.js" type="text/javascript"></script>
+    <!-- Insert this line after script imports -->
+    <script>if (window.module) module = window.module;</script>
+
+</head>
+<body>
+<form id="composeForm" class="white basic_padding">
+    <label>Recipient</label> <br> <select name="recipient" id="recipientSelect" class="basic_padding white">
+</select> <br>
+    <button id="addContact">Add new contact</button> <br> <br>
+    <div class="input-field"><label> Subject</label> <br> <input type="text" name="recipient" > </div> <br>
+
+
+<textarea id="area1" cols="120"></textarea>
+<div id="attachmentArea"></div>
+<button id="addAttachmentButton">Add attachment</button>
+</form>
+<script>
+    const ipcRenderer = require('electron').ipcRenderer;
+    //$('#recipientSelect').formSelect();
+    ipcRenderer.send("compose:getContacts",true);
+    ipcRenderer.on("compose:getContacts", function (e, data) {
+        console.log("Got contacts");
+        console.log(data);
+        var contactLength = data.length;
+        for (var i =0; i< contactLength; i++)
+        {
+            var opt  = $("<option>");
+            opt.data(data[i]);
+            console.log(opt.data());
+            opt.attr("value",i);
+            opt.text('"'+ data[i].name +  '" ' + data[i].email );
+            $("#recipientSelect").append(opt);
+        }
+        $('#recipientSelect').formSelect();
+    });
+    
+    $("#composeForm").submit(function (e) {
+        e.preventDefault();
+    })
+    $("#addContact").click(function (e) {
+        e.preventDefault();
+    })
+    new nicEditor({fullPanel : true, iconsPath : '../extensions/nicEdit/nicEditorIcons.gif'}).panelInstance('area1');
+    $("#addAttachmentButton").click(function (e) {
+
+        e.preventDefault();
+
+    })
+</script>
+</body>
+</html>

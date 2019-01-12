@@ -1,4 +1,11 @@
 
+<button id="compose">Compose new email</button>
+<script>
+    $("#compose").click(function (e) {
+        e.preventDefault();
+        ipcRenderer.send("compose",true);
+    })
+</script>
 <div class="white basic_padding">
 	<table class="striped highlight" id="inboxTable">
 		<thead>
