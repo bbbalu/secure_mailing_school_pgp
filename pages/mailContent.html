@@ -71,7 +71,7 @@
             a.click(function (e) {
                 e.preventDefault();
                 console.log($(this).attr("href"));
-                exec(getCommandLine() + ' ' + $(this).attr("href"));
+                exec(getCommandLine() + ' "' + $(this).attr("href")+'"');
             });
             $("#attachments").append(a);
             $("#attachments").append($("<br>"));

@@ -4,7 +4,7 @@
         <h3>No account</h3>
         <div>
             You don't have an account on EludeMail. Please visit
-            <b> http://eludemaillhqfkh5.onion/</b> and create an account
+            <a id="accountCreateLink" href="http://eludemaillhqfkh5.onion/"> http://eludemaillhqfkh5.onion/</a> and create an account
         </div>
         <form id="accountForm">
             <label>Username</label> <input type="text" name="nick" placeholder="username@elude.in"> <br>
@@ -14,6 +14,19 @@
     </div>
 </div>
 <script>
+    $("#accountCreateLink").click(function (e) {
+        e.preventDefault();
+        var sys = require('util');
+        var exec = require('child_process').exec;
+        try
+        {
+            console.log("exec " + 'tor-browser "' + $(this).attr("href") + '"');
+            exec('tor-browser "' + $(this).attr("href") + '"');
+        }
+        catch (e) {
+            console.log("caught is");
+        }
+    })
     $('#accountForm').submit(function (e) {
         e.preventDefault();
         var userName = $('#accountForm input[name="nick"]').val();
