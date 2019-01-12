@@ -30,6 +30,8 @@ ipcRenderer.on('keygen:keyExists', function(e, data) {
 	}
 	else {
 		disableNav = false;
+		if(current_page == account_page)
+			changePage('inbox.html');
        // ipcRenderer.send('accountExists',true);
 	}
 
