@@ -37,7 +37,6 @@
         </tr> -->
     </tbody>
 </table>
-	<textarea readonly id="mailText" rows="20"></textarea>
 	<script>
         ipcRenderer.send("inbox",true);
 
@@ -54,6 +53,9 @@
                 tr.data("folder",inbox[i].folder);
                 tr.data("attachments", inbox[i].attachments);
                 tr.data("index",i);
+                tr.data("subject", inbox[i].subject);
+                tr.data("sender",inbox[i].sender);
+                tr.data("date", inbox[i].date);
                 var td = $("<td>");
                 td.text(inbox[i].sender);
                 tr.append(td);

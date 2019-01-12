@@ -6,6 +6,8 @@
     <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
 
     <!-- normal script imports etc  -->
+    <link rel="stylesheet" href="../extensions/materialize/css/materialize.min.css">
+    <link rel="stylesheet" href="../extensions/design.css">
 
     <script type="text/javascript" src="../extensions/jquery/jquery-3.3.1.min.js"></script>
     <!-- Insert this line after script imports -->
@@ -13,7 +15,11 @@
 
 </head>
 <body>
-
+<div class="white basic_padding">
+    <label> From </label> <label id="senderLabel"></label> <br>
+    <label> Subject </label> <label id="subjectLabel"></label> <br>
+    <label> Date </label> <label id="dateLabel"></label>
+</div>
 <div id="emailContent"></div>
 <div>
     <div>Attachments</div>
@@ -44,6 +50,11 @@
         $("#emailContent").append(p);
 
         $("#attachments").empty();
+
+        $("#senderLabel").text(data.sender);
+        $("#subjectLabel").text(data.subject);
+        $("#dateLabel").text(data.date);
+
         var attLength = data.attachments.length;
         for(var i=0; i< attLength; i++)
         {

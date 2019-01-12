@@ -45,6 +45,7 @@ ipcRenderer.on('accountExists', function (e,data) {
     else {
         disableNav = false;
         ipcRenderer.send('keygen:keyExists', true);
+        //if(current_page != 'inbox.html') changePage('inbox.html');
         //changePage('inbox.html')
     }
 })

@@ -116,11 +116,29 @@ ipcMain.on('keygen:keyExists', function(e, data) {
 ipcMain.on('accountExists', function(e, data)
 {
    var existsBool = fs.existsSync(profileDir+"profile.json");
-   mainWindow.webContents.send('accountExists',existsBool);
+   if(existsBool === true)
+   {
+       var acc = fs.readFileSync(profileDir+"profile.json");
+       try{
+           acc=JSON.parse(fs.readFileSync(profileDir+"profile.json"));
+           if(acc === undefined)
+               mainWindow.webContents.send('accountExists',false);
+           if((acc.userName === undefined) || (acc.userName ===''))
+               mainWindow.webContents.send('accountExists',false);
+           if((acc.password === undefined) || (acc.password === ''))
+               mainWindow.webContents.send('accountExists',false);
+       }catch (e) {
+           mainWindow.webContents.send('accountExists',false);
+       }
+
+   }
+   else
+       mainWindow.webContents.send('accountExists',existsBool);
 });
 
 ipcMain.on('accountCreated', function (e,data) {
    fs.writeFileSync(profileDir+"profile.json",JSON.stringify(data));
+   //mainWindow.loadURL(urlSOS('main.html'))
 });
 
 // Generate new key pairs
@@ -137,11 +155,7 @@ ipcMain.on('keygen:createKeypairs', function(e, data) {
 		var privkey = key.privateKeyArmored; // '-----BEGIN PGP PRIVATE KEY BLOCK ... '
 	    var pubkey = key.publicKeyArmored;   // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
 	    var revocationCertificate = key.revocationCertificate; // '-----BEGIN PGP PUBLIC KEY BLOCK ...
-		//var privKeyObj = openpgp.key.readArmored(privkey).keys[0];
-		//console.log(privKeyObj)
-		//console.log(key.key.publicKeyArmored);
-		//var privsubk1 = key.subkeys[0].privateKeyArmored;
-		//var pubsubk1 = key.subkeys[0].publicKeyArmored;
+
 	    mainWindow.webContents.send('keygen:showKeys', key);
 
 
@@ -191,9 +205,23 @@ ipcMain.on("inbox", function (e,data) {
     var checkbool = fs.existsSync(inboxDir+"inbox.json");
     if(checkbool === true)
     {
-        var inbox = JSON.parse(fs.readFileSync(inboxDir+"inbox.json"));
-        console.log("Inbox is alive");
-        console.log(inbox);
+        var inbox;
+        try {
+            var inbox = JSON.parse(fs.readFileSync(inboxDir + "inbox.json"));
+            console.log("Inbox is alive");
+            console.log(inbox);
+            mainWindow.send('inbox', inbox);
+        }
+        catch (e) {
+            var inbox = [];
+            fs.writeFileSync(inboxDir+"inbox.json",JSON.stringify(inbox));
+            mainWindow.send('inbox', inbox);
+        }
+    }
+    else
+    {
+        var inbox = [];
+        fs.writeFile(inboxDir+"inbox.json",JSON.stringify(inbox));
         mainWindow.send('inbox', inbox);
     }
 });
@@ -204,12 +232,15 @@ ipcMain.on("inbox:seeMail", function(e,data)
     var d = path.join(inboxDir+ data.folder + "/");
     console.log(d);
     var textFile = fs.readFileSync(d+".text.txt",'utf8');
-    var info = {
+    var info = data;
+    info.folder = d;
+    info.text = textFile;
+    /*{
         folder : d,
         attachments: data.attachments,
         text: textFile,
         index : data.index
-    }
+    }*/
     console.log(info);
     createSubWindow("lol", "pages/mailContent.html");
     subWindow.webContents.on('did-finish-load', () => {
