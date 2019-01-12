@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../extensions/design.css">
 
     <script type="text/javascript" src="../extensions/jquery/jquery-3.3.1.min.js"></script>
+    <script src="../extensions/nicEdit/nicEdit.js" type="text/javascript"></script>
     <!-- Insert this line after script imports -->
     <script>if (window.module) module = window.module;</script>
 
@@ -21,11 +22,15 @@
     <label> Date </label> <label id="dateLabel"></label>
 </div>
 <div id="emailContent"></div>
+<textarea cols=60 id="area1" readonly></textarea>
 <div>
     <div>Attachments</div>
 <div id="attachments"></div>
 </div>
 <script>
+    /*bkLib.onDomLoaded(function() {
+
+    });*/
     var sys = require('util');
     var exec = require('child_process').exec;
     function getCommandLine() {
@@ -41,14 +46,15 @@
         console.log(message); // logs out "Hello second window!"
     })
     //ipcRenderer.send("mailContent",true);
-
+    new nicEditor({buttonList : ['fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','image'], iconsPath : '../extensions/nicEdit/nicEditorIcons.gif'}).panelInstance('area1');
     ipcRenderer.on("inbox:message", function (e,data) {
-        $("#emailContent").empty();
+        /*$("#emailContent").empty();
         var p = $("<pre>");
         p.css("overflow-y", "scroll");
         p.text(data.text);
-        $("#emailContent").append(p);
-
+        $("#emailContent").append(p);*/
+        //$("#area1").text(data.text);
+        nicEditors.findEditor('area1').setContent(data.text);
         $("#attachments").empty();
 
         $("#senderLabel").text(data.sender);
@@ -74,10 +80,12 @@
 
     })    
 
-    /*$(document).ready(function()
+    $(document).ready(function()
     {
-        console.log("test");
-    })*/
+        jQuery('.nicEdit-main').attr('contenteditable','false');
+        jQuery('.nicEdit-panel').hide();
+      //  console.log("test");
+    })
 </script>
 </body>
 </html>
