@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+    <!-- normal script imports etc  -->
+    <link rel="stylesheet" href="../extensions/materialize/css/materialize.min.css">
+    <link rel="stylesheet" href="../extensions/design.css">
+
+    <script type="text/javascript" src="../extensions/jquery/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../extensions/materialize/js/materialize.js"></script>
+    <script src="../extensions/nicEdit/nicEdit.js" type="text/javascript"></script>
+    <!-- Insert this line after script imports -->
+    <script>if (window.module) module = window.module;</script>
+
+</head>
+<body>
+<div class="">
+    <label> From </label> <label id="senderLabel"></label> <br>
+    <label> Subject </label> <label id="subjectLabel"></label> <br>
+    <label> Date </label> <label id="dateLabel"></label>
+</div>
+<div id="emailContent"></div>
+<textarea cols=60 id="area1" readonly></textarea>
+<div>
+    <div>Attachments</div>
+<div id="attachments"></div>
+</div>
+<script>
+    /*bkLib.onDomLoaded(function() {
+
+    });*/
+    var sys = require('util');
+    var exec = require('child_process').exec;
+    function getCommandLine() {
+        switch (process.platform) {
+            case 'darwin' : return 'open';
+            case 'win32' : return 'start';
+            case 'win64' : return 'start';
+            default : return 'xdg-open';
+        }
+    }
+    const ipcRenderer = require('electron').ipcRenderer;
+    ipcRenderer.on('message', (event, message) => {
+        console.log(message); // logs out "Hello second window!"
+    })
+    //ipcRenderer.send("mailContent",true);
+    new nicEditor({buttonList : ['fontSize','bold','italic','underline','strikeThrough','subscript','superscript','html','image'], iconsPath : '../extensions/nicEdit/nicEditorIcons.gif'}).panelInstance('area1');
+    ipcRenderer.on("inbox:message", function (e,data) {
+        /*$("#emailContent").empty();
+        var p = $("<pre>");
+        p.css("overflow-y", "scroll");
+        p.text(data.text);
+        $("#emailContent").append(p);*/
+        //$("#area1").text(data.text);
+        nicEditors.findEditor('area1').setContent(data.text);
+        $("#attachments").empty();
+
+        $("#senderLabel").text(data.sender);
+        $("#subjectLabel").text(data.subject);
+        $("#dateLabel").text(data.date);
+
+        var attLength = data.attachments.length;
+        for(var i=0; i< attLength; i++)
+        {
+            var a = $("<a>");
+            a.attr("href",data.folder+data.attachments[i]);
+            a.text(data.folder+data.attachments[i]);
+            a.click(function (e) {
+                e.preventDefault();
+                console.log($(this).attr("href"));
+                exec(getCommandLine() + ' "' + $(this).attr("href")+'"');
+            });
+            $("#attachments").append(a);
+            $("#attachments").append($("<br>"));
+        }
+        //console.log("COmmand is: ")
+        //console.log(getCommandLine());
+
+    })    
+
+    $(document).ready(function()
+    {
+        jQuery('.nicEdit-main').attr('contenteditable','false');
+        jQuery('.nicEdit-panel').hide();
+      //  console.log("test");
+    })
+</script>
+</body>
+</html>

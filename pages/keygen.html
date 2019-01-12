@@ -45,29 +45,31 @@
 
 	<div class="row white keyarea">
 		<div class="input-field col s12">
-			<textarea id="privkey" class="materialize-textarea" readonly></textarea>
+			<textarea id="privkey" class="materialize-textarea" readonly style='overflow-y: scroll'></textarea>
 			<label for="textarea1" class="active">Private key</label>
 		</div>
 	</div>
 	<div class="row white keyarea">
 		<div class="input-field col s12">
-			<textarea id="pubkey" class="materialize-textarea" readonly></textarea>
+			<textarea id="pubkey" class="materialize-textarea" readonly style="overflow-y: scroll"></textarea>
 			<label for="textarea1" class="active">Public key</label>
 		</div>
 	</div>
 	<div class="row white keyarea">
 		<div class="input-field col s12">
-			<textarea id="revocationCertificate" class="materialize-textarea" readonly></textarea>
-			<label for="textarea1" class="active">Signature key</label>
+			<textarea id="revocationCertificate" class="materialize-textarea" readonly style="overflow-y: scroll"></textarea>
+			<label for="textarea1" class="active">Revocation signature for public key</label>
 		</div>
 	</div>
 
 	<script>
 		// Test key exists
+        console.log("I got keygen2");
 		ipcRenderer.send('keygen:keyExists', true);
 
 		// Answer from application main -> true: we have keys, false: we have to generate new keys
 		ipcRenderer.on('keygen:keyExists', function(e, data) {
+		    console.log("I got keygen");
 			if (data == false) {
 				$('#noKeyNotification').css('display', 'block');
 				$('#createKeypairs').prop('disabled', false);
@@ -86,6 +88,7 @@
 		});
 
 		ipcRenderer.on('keygen:showKeys', function(e, data){
+		    console.log(data);
 			$('#noKeyNotification').css('display', 'none');
 			$('#createKeypairs').prop('disabled', true);
 			

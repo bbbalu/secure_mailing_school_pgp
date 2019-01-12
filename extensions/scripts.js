@@ -13,9 +13,12 @@ var disableNav = false;
 // Save current page
 var current_page = '';
 var keygen_page = 'keygen.html';
-
+var account_page = 'account.html';
 // Test key exists
-ipcRenderer.send('keygen:keyExists', true);
+ipcRenderer.send('accountExists',true);
+//ipcRenderer.send('keygen:keyExists', true);
+
+//ipcRenderer.send("inbox",true);
 
 // Answer from application main -> true: we have keys, false: we have to generate new keys
 ipcRenderer.on('keygen:keyExists', function(e, data) {
@@ -27,9 +30,27 @@ ipcRenderer.on('keygen:keyExists', function(e, data) {
 	}
 	else {
 		disableNav = false;
+		if(current_page == account_page)
+			changePage('inbox.html');
+       // ipcRenderer.send('accountExists',true);
 	}
 
 });
+
+
+
+ipcRenderer.on('accountExists', function (e,data) {
+    if (data == false) {
+        disableNav = true;
+        if (current_page != account_page) changePage(account_page);
+    }
+    else {
+        disableNav = false;
+        ipcRenderer.send('keygen:keyExists', true);
+        //if(current_page != 'inbox.html') changePage('inbox.html');
+        //changePage('inbox.html')
+    }
+})
 
 
 
@@ -64,6 +85,8 @@ function changePage(htmlTo) {
 		current_page = htmlTo;
 	});
 }
+
+
 
 // Set homepage
 changePage('inbox.html');
