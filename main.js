@@ -12,15 +12,21 @@ const appTitle = "TP secure mail";
 const keyPatch = path.join(__dirname, 'keys/');
 const profileDir = path.join(__dirname, 'profile/');
 const inboxDir = path.join(__dirname, 'inbox/');
-const adressDir = path.join(__dirname,'adressbook/');
+const addressDir = path.join(__dirname,'adressbook/');
+const tmpDir  = path.join(__dirname, 'tmp/');
 const keyNames = ['priv_key', 'pub_key', 'revocation',];
 const archiver = require('archiver');
+const locks = require('locks');
+
+const randomstring = require("randomstring");
 
 const socksConfig = {
     proxyHost: 'localhost',
     proxyPort: 9050,
     auths: [ socks.auth.None() ]
 };
+
+var writeLock = locks.createMutex();
 
 const {app, BrowserWindow, Menu, ipcMain} = electron;
 
@@ -259,52 +265,52 @@ ipcMain.on("compose", function (e,data) {
 
 ipcMain.on("compose:getContacts", function(e, data)
 {
-    var existsBool = fs.existsSync(adressDir + "adressbook.json");
+    var existsBool = fs.existsSync(addressDir + "adressbook.json");
     if(existsBool === true)
     {
         console.log("hey");
         try{
-            var adressBook = JSON.parse(fs.readFileSync(adressDir + "adressbook.json"));
+            var adressBook = JSON.parse(fs.readFileSync(addressDir + "adressbook.json"));
             console.log(adressBook)
             subWindow.webContents.send("compose:getContacts",adressBook);
 
         }
         catch (e) {
             var adressBook = [];
-            fs.writeFileSync(adressDir + "adressbook.json",JSON.stringify(adresBook));
+            fs.writeFileSync(addressDir + "adressbook.json",JSON.stringify(adresBook));
             subWindow.webContents.send("compose:getContacts",adressBook);
         }
     }
     else
     {
         var adressBook = [];
-        fs.writeFileSync(adressDir + "adressbook.json",JSON.stringify(adresBook));
+        fs.writeFileSync(addressDir + "adressbook.json",JSON.stringify(adresBook));
         subWindow.webContents.send("compose:getContacts",adressBook);
 
     }
 });
 
 ipcMain.on("adressBook", function (e,data) {
-    var existsBool = fs.existsSync(adressDir + "adressbook.json");
+    var existsBool = fs.existsSync(addressDir + "adressbook.json");
     if(existsBool === true)
     {
         console.log("hey");
         try{
-            var adressBook = JSON.parse(fs.readFileSync(adressDir + "adressbook.json"));
+            var adressBook = JSON.parse(fs.readFileSync(addressDir + "adressbook.json"));
             console.log(adressBook)
             mainWindow.webContents.send("adressBook",adressBook);
 
         }
         catch (e) {
             var adressBook = [];
-            fs.writeFileSync(adressDir + "adressbook.json",JSON.stringify(adresBook));
+            fs.writeFileSync(addressDir + "adressbook.json",JSON.stringify(adresBook));
             mainWindow.webContents.send("adressBook",adressBook);
         }
     }
     else
     {
         var adressBook = [];
-        fs.writeFileSync(adressDir + "adressbook.json",JSON.stringify(adresBook));
+        fs.writeFileSync(addressDir + "adressbook.json",JSON.stringify(adresBook));
         mainWindow.webContents.send("adressBook",adressBook);
 
     }
@@ -330,10 +336,9 @@ async function encrypt(privkey,passphrase,pubkey, message) {
 	return encrypted;
 }
 
-async function encryptBinary(privkey,passphrase,pubkey, sourcePath, destinationPath) {
+async function encryptBinary(privkey,passphrase,pubkey, sourcePath) {
 //async function encryptBinary(privkey,passphrase,pubkey, sourcePath) {
     //openpgp.readArmored(pubkey);
-
     var privKeyObj = (await openpgp.key.readArmored(privkey)).keys[0];
     var publicKeys = (await openpgp.key.readArmored(pubkey)).keys;
     await privKeyObj.decrypt(passphrase)
@@ -341,11 +346,11 @@ async function encryptBinary(privkey,passphrase,pubkey, sourcePath, destinationP
     const file = fs.readFileSync(sourcePath);
 
     const fileForOpenpgpjs = new Uint8Array(file);
-    console.log("File : ");
-    console.log(fileForOpenpgpjs);
+
     const options = {
         message :  openpgp.message.fromBinary(file),
         publicKeys: publicKeys,
+        privateKey: privKeyObj,
         armor: false
     };
     const encryptionResponse = await openpgp.encrypt(options); // note the await here - this is async
@@ -473,24 +478,14 @@ async function zipFiles()
         publicKeyArmored: fs.readFileSync(keyPatch+keyNames[1]),
         revocationCertificate: fs.readFileSync(keyPatch+keyNames[2])
     };
-    var path = require("path");
-	console.log("I am here");
+
     var fileNumber = fileNames.length;
     for (var i =0; i< fileNumber; i++)
     {
         console.log(fileNames[i]);
      //   archive.file(fileNames[i]);
     }
-    const options = {
-        //title: 'Open a file or folder',
-        //defaultPath: '/path/to/something/',
-        //buttonLabel: 'Do it',
-        /*filters: [
-          { name: 'xml', extensions: ['xml'] }
-        ],*/
-        //properties: ['showHiddenFiles'],
-        //message: 'This message will only be shown on macOS'
-    };
+
     var archive = archiver('zip', {
         //gzip: true,
         zlib: { level: 9 } // Sets the compression level.
@@ -569,6 +564,51 @@ async function zipFiles()
     //var output = fs.createWriteStream('./example.zip')
 }
 
+async function encryptAndZip(zipName,publicKey, fileList)
+{
+    var privateKey = fs.readFileSync(keyPatch+keyNames[0]);
+    var archive = archiver('zip', {
+        //gzip: true,
+        zlib: { level: 9 } // Sets the compression level.
+    });
+    archive.on('error', function(err) {
+        throw err;
+    });
+    archive.on('finish',function()
+    {
+        console.log("finished zipping file = " + zipName);
+        Object.keys(fileList).forEach(function(key) {
+            fs.unlinkSync(tmpDir+fileList[key]);
+        });
+        fs.unlinkSync(tmpDir+".text.txt");
+        writeLock.unlock();
+
+    })
+    var output = fs.createWriteStream(tmpDir+zipName);
+    archive.pipe(output);
+    var attLength = Object.keys(fileList).length;
+    var counter = attLength;
+    Object.keys(fileList).forEach(function(key) {
+        //console.log(key, originalNames[key]);
+        encryptBinary(privateKey, 'testtest',publicKey,key).then(function (result) {
+            console.log(key);
+            console.log(fileList[key]);
+            fs.writeFileSync(tmpDir+fileList[key],result.stream);
+            archive.file(tmpDir+fileList[key], {name: fileList[key]});
+            counter -= 1;
+            if(counter === 0)
+            {
+                console.log("Finished counting");
+                archive.finalize();
+            }
+        })
+
+    });
+
+
+
+}
+
 async function uploadFile(filePath,token)
 {
     var path = require("path");
@@ -634,6 +674,59 @@ ipcMain.on("compose:removeAttachment", function (e,data) {
     }
     console.log(fileNames);
 });
+
+ipcMain.on("compose:send", function (e,data) {
+    sendEmail(data);
+});
+
+async function sendEmail(data)
+{
+    var attachments = fileNames.slice();
+    //attachments[0] = "not my attachment";
+    fileNames = [];
+
+    writeLock.lock(function ()
+    {
+        fs.writeFileSync(tmpDir+".text.txt", data.text);
+        var originalNames = {};
+        var randomStr;
+
+        var attLength = attachments.length;
+        for(var i=0; i< attLength; i++)
+        {
+            randomStr= randomstring.generate({
+                charset: 'alphanumeric'
+            });
+            originalNames[attachments[i]] = randomStr;
+        }
+        randomStr= randomstring.generate({
+            charset: 'alphanumeric'
+        });
+        originalNames[tmpDir+".text.txt"] = randomStr;
+        var messageLog = {};
+        Object.keys(originalNames).forEach(function(key) {
+            //console.log(key, originalNames[key]);
+            messageLog[path.basename(key)] = originalNames[key];
+        });
+        fs.writeFileSync(tmpDir+".message.json",JSON.stringify(messageLog));
+        originalNames[tmpDir+".message.json"]=".message.json";
+        var publicKey= fs.readFileSync(keyPatch+keyNames[1]);
+
+
+
+        // encrpyt all files and zip them please
+        var zipName = randomstring.generate({
+            charset: 'alphanumeric'
+        });
+        encryptAndZip(zipName,publicKey,originalNames);
+        //put here encryption have to redo zipFiles function
+
+        //messageLog['.text.txt'] = randomStr;
+
+
+    });
+
+}
 
 ipcMain.on("decryptFile",function(e,data) {
     var key = {

@@ -20,12 +20,15 @@
     <label>Recipient</label> <br> <select name="recipient" id="recipientSelect" class="basic_padding white">
         </select> <br>
     <button id="addContact">Add new contact</button> <br> <br>
-    <div class="input-field"><label> Subject</label> <br> <input type="text" name="recipient" > </div> <br>
+    <div class="input-field"><label> Subject</label> <br> <input type="text" name="subject" > </div> <br>
 
 
     <textarea id="area1" cols="120"></textarea>
-    <button id="addAttachmentButton">Add attachment</button>
-    <div id="attachmentArea"></div>
+
+    <div id="attachmentArea">
+        <button id="addAttachmentButton">Add attachment</button>
+    </div>
+    <input type="submit" value="Send email">
 </form>
 <script>
     var sys = require('util');
@@ -39,7 +42,7 @@
         }
     }
 
-    var attachments = [];
+
         const ipcRenderer = require('electron').ipcRenderer;
     //$('#recipientSelect').formSelect();
         ipcRenderer.send("compose:getContacts",true);
@@ -47,6 +50,7 @@
             console.log("Got contacts");
             console.log(data);
             var contactLength = data.length;
+            $("#recipientSelect").empty();
             for (var i =0; i< contactLength; i++)
             {
                 var opt  = $("<option>");
@@ -61,6 +65,25 @@
     
     $("#composeForm").submit(function (e) {
         e.preventDefault();
+        nicEditors.findEditor('area1').saveContent();
+        var text = nicEditors.findEditor('area1').getContent();
+
+        var formData = $(this).serializeArray();
+        var o = {};
+        $.each(formData, function() {
+            if (o[this.name]) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        formData = o;
+        formData.text = text;
+        //console.log(formData);
+        ipcRenderer.send("compose:send", formData);
     })
     $("#addContact").click(function (e) {
         e.preventDefault();
