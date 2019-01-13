@@ -18,34 +18,46 @@
 <body>
 <form id="composeForm" class="white basic_padding">
     <label>Recipient</label> <br> <select name="recipient" id="recipientSelect" class="basic_padding white">
-</select> <br>
+        </select> <br>
     <button id="addContact">Add new contact</button> <br> <br>
     <div class="input-field"><label> Subject</label> <br> <input type="text" name="recipient" > </div> <br>
 
 
-<textarea id="area1" cols="120"></textarea>
-<div id="attachmentArea"></div>
-<button id="addAttachmentButton">Add attachment</button>
+    <textarea id="area1" cols="120"></textarea>
+    <button id="addAttachmentButton">Add attachment</button>
+    <div id="attachmentArea"></div>
 </form>
 <script>
-    const ipcRenderer = require('electron').ipcRenderer;
-    //$('#recipientSelect').formSelect();
-    ipcRenderer.send("compose:getContacts",true);
-    ipcRenderer.on("compose:getContacts", function (e, data) {
-        console.log("Got contacts");
-        console.log(data);
-        var contactLength = data.length;
-        for (var i =0; i< contactLength; i++)
-        {
-            var opt  = $("<option>");
-            opt.data(data[i]);
-            console.log(opt.data());
-            opt.attr("value",i);
-            opt.text('"'+ data[i].name +  '" ' + data[i].email );
-            $("#recipientSelect").append(opt);
+    var sys = require('util');
+    var exec = require('child_process').exec;
+    function getCommandLine() {
+        switch (process.platform) {
+            case 'darwin' : return 'open';
+            case 'win32' : return 'start " "';
+            case 'win64' : return 'start " "';
+            default : return 'xdg-open';
         }
-        $('#recipientSelect').formSelect();
-    });
+    }
+
+    var attachments = [];
+        const ipcRenderer = require('electron').ipcRenderer;
+    //$('#recipientSelect').formSelect();
+        ipcRenderer.send("compose:getContacts",true);
+        ipcRenderer.on("compose:getContacts", function (e, data) {
+            console.log("Got contacts");
+            console.log(data);
+            var contactLength = data.length;
+            for (var i =0; i< contactLength; i++)
+            {
+                var opt  = $("<option>");
+                opt.data(data[i]);
+                console.log(opt.data());
+                opt.attr("value",i);
+                opt.text('"'+ data[i].name +  '" ' + data[i].email );
+                $("#recipientSelect").append(opt);
+            }
+            $('#recipientSelect').formSelect();
+        });
     
     $("#composeForm").submit(function (e) {
         e.preventDefault();
@@ -57,8 +69,38 @@
     $("#addAttachmentButton").click(function (e) {
 
         e.preventDefault();
+        ipcRenderer.send("compose:addAttachment",true);
 
     })
+    
+    ipcRenderer.on("compose:addAttachment", function (e,data) {
+        var a = $("<a>");
+        a.attr("href", data);
+        a.text(data);
+        a.click(function (e) {
+            e.preventDefault();
+
+            console.log("COmmang line code");
+            console.log(getCommandLine());
+            console.log(getCommandLine() + ' "'   + $(this).attr("href")+ '"');
+            exec(getCommandLine() + ' "'   + $(this).attr("href")+ '"');
+        });
+        var div = $("<div>");
+        div.append(a);
+        var but = $("<button>");
+        but.text("Remove Attachment");
+        but.addClass("removeAttachment");
+        but.click(function (e) {
+            e.preventDefault();
+            console.log("Clicked button");
+            console.log(a.attr("href"));
+            ipcRenderer.send("compose:removeAttachment", a.attr("href"));
+            $(this).parent().remove();
+        });
+        div.append(but);
+        $("#attachmentArea").append(div);
+    })
+    
 </script>
 </body>
 </html>

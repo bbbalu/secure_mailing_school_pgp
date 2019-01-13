@@ -252,6 +252,7 @@ ipcMain.on("inbox:seeMail", function(e,data)
 });
 
 ipcMain.on("compose", function (e,data) {
+    fileNames = [];
     createSubWindow("lol", "pages/sent.html",
         600,800);
 });
@@ -451,6 +452,10 @@ function addFileToZip()
             return;
 
         fileNames.push(filenames[0]);
+        if((subWindow !== undefined)  && (subWindow !== null))
+        {
+            subWindow.webContents.send("compose:addAttachment", filenames[0]);
+        }
     });
     /*dialog.showMessageBox({ message: "Súbor pridaný na šifrovanie",
 
@@ -601,9 +606,9 @@ async function uploadFile(filePath,token)
     })
 }
 
-ipcMain.on("addFileToZip",function(e,data)
+ipcMain.on("compose:addAttachment",function(e,data)
 {
-	console.log("hell yeah");
+	//console.log("hell yeah");
 	addFileToZip();
 });
 
@@ -619,6 +624,16 @@ ipcMain.on("zipFiles",function(e,data)
 
 	});
 })
+
+ipcMain.on("compose:removeAttachment", function (e,data) {
+   console.log(data);
+   var index = fileNames.indexOf(data);
+   console.log("index is " + index);
+    if (index > -1) {
+        fileNames.splice(index, 1);
+    }
+    console.log(fileNames);
+});
 
 ipcMain.on("decryptFile",function(e,data) {
     var key = {
