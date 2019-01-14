@@ -16,6 +16,7 @@ const addressDir = path.join(__dirname,'adressbook/');
 const tmpDir  = path.join(__dirname, 'tmp/');
 const keyNames = ['priv_key', 'pub_key', 'revocation',];
 const archiver = require('archiver');
+const unzip = require('unzip');
 const locks = require('locks');
 
 const randomstring = require("randomstring");
@@ -382,13 +383,14 @@ async function decrypt(privkey,passphrase,message)
     return(plaintext);
 }
 
-async function decryptBinary(privkey,passphrase,sourceFile,destFile)
+async function decryptBinary(privkey,passphrase,pubkey,sourceFile,destFile)
 {
+    console.log("Decrypt Binary started");
 	console.log(sourceFile)
 	console.log(destFile)
-    privKeyObj = (await openpgp.key.readArmored(privkey)).keys[0];
+    var privKeyObj = (await openpgp.key.readArmored(privkey)).keys[0];
     await privKeyObj.decrypt(passphrase);
-
+    var publicKeys = (await openpgp.key.readArmored(pubkey)).keys;
     const file = fs.readFileSync(sourceFile);
 
     const fileForOpenpgpjs = new Uint8Array(file);
@@ -396,6 +398,7 @@ async function decryptBinary(privkey,passphrase,sourceFile,destFile)
     var options = {
         message: await openpgp.message.read(fileForOpenpgpjs),
         format: 'binary',
+        publicKeys: publicKeys,
         privateKeys: [privKeyObj]
     }
 
@@ -564,7 +567,7 @@ async function zipFiles()
     //var output = fs.createWriteStream('./example.zip')
 }
 
-async function encryptAndZip(zipName,publicKey, fileList)
+async function encryptAndZip(zipName,publicKey ,fileList)
 {
     var privateKey = fs.readFileSync(keyPatch+keyNames[0]);
     var archive = archiver('zip', {
@@ -582,6 +585,7 @@ async function encryptAndZip(zipName,publicKey, fileList)
         });
         fs.unlinkSync(tmpDir+".text.txt");
         writeLock.unlock();
+        unzipAndDecrypt(path.basename( zipName),publicKey);
 
     })
     var output = fs.createWriteStream(tmpDir+zipName);
@@ -605,8 +609,61 @@ async function encryptAndZip(zipName,publicKey, fileList)
 
     });
 
+}
+async function unzipAndDecrypt(zipName,publicKey)
+{
+    var decryptedDir = zipName;
+    console.log("decrypt zip is");
+    console.log(decryptedDir)
+    writeLock.lock(function()
+        {
+            var privateKey = fs.readFileSync(keyPatch+keyNames[0]);
+            var exitsBool = fs.existsSync(inboxDir + decryptedDir);
+            while(exitsBool === true)
+            {
+                decryptedDir=randomstring.generate({
+                    charset: 'alphanumeric'
+                });
+                exitsBool = fs.existsSync(inboxDir + decryptedDir);
+            }
+
+            fs.mkdirSync(inboxDir + decryptedDir);
+            decryptedDir = path.join(inboxDir,decryptedDir+"/");
+
+            fs.createReadStream(tmpDir + zipName).pipe(unzip.Extract({ path: decryptedDir }).on('close', function (){
+                console.log("hey");
+
+                decryptBinary(privateKey,'testtest',publicKey,decryptedDir+".message.json", decryptedDir+"..message.json").then(function () {
 
 
+                    fs.unlinkSync(decryptedDir+".message.json");
+                    var messageLog = JSON.parse(fs.readFileSync(decryptedDir+"..message.json"));
+                    var counter = Object.keys(messageLog).length;
+                    console.log("counter is  "+counter);
+                    console.log(messageLog);
+                    Object.keys(messageLog).forEach(function(key) {
+                        console.log()
+                            decryptBinary(privateKey,'testtest',publicKey,decryptedDir+messageLog[key],decryptedDir+key).then(function () {
+                                counter -=1;
+                                if(counter ===0)
+                                {
+                                    console.log("Finished unzipping");
+                                    writeLock.unlock();
+                                }
+                            });
+                    });
+
+
+                });
+               //writeLock.unlock();
+               console.log("Just needs unlocking")
+                //decrypt - add to inbox.json
+
+
+
+            }));
+        }
+    );
 }
 
 async function uploadFile(filePath,token)
