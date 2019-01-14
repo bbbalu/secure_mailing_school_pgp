@@ -17,6 +17,7 @@
     "randomstring": "^1.1.5",
     "socks5-http-client": "^1.0.4",
     "socksv5": "0.0.6",
-    "unzip": "^0.1.11"
+    "unzip": "^0.1.11",
+    "unzipper": "^0.9.7"
   }
 }

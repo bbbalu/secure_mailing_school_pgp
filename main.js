@@ -16,7 +16,7 @@ const addressDir = path.join(__dirname,'adressbook/');
 const tmpDir  = path.join(__dirname, 'tmp/');
 const keyNames = ['priv_key', 'pub_key', 'revocation',];
 const archiver = require('archiver');
-const unzip = require('unzip');
+const unzipper = require('unzipper');
 const locks = require('locks');
 
 const randomstring = require("randomstring");
@@ -585,7 +585,7 @@ async function encryptAndZip(zipName,publicKey ,fileList)
         });
         fs.unlinkSync(tmpDir+".text.txt");
         writeLock.unlock();
-        unzipAndDecrypt(path.basename( zipName),publicKey);
+        unzipAndDecrypt(path.basename( zipName),publicKey,"sheaxer@elude.in");
 
     })
     var output = fs.createWriteStream(tmpDir+zipName);
@@ -610,7 +610,7 @@ async function encryptAndZip(zipName,publicKey ,fileList)
     });
 
 }
-async function unzipAndDecrypt(zipName,publicKey)
+async function unzipAndDecrypt(zipName,publicKey,sender)
 {
     var decryptedDir = zipName;
     console.log("decrypt zip is");
@@ -630,7 +630,7 @@ async function unzipAndDecrypt(zipName,publicKey)
             fs.mkdirSync(inboxDir + decryptedDir);
             decryptedDir = path.join(inboxDir,decryptedDir+"/");
 
-            fs.createReadStream(tmpDir + zipName).pipe(unzip.Extract({ path: decryptedDir }).on('close', function (){
+            fs.createReadStream(tmpDir + zipName).pipe(unzipper.Extract({ path: decryptedDir }).on('close', function (){
                 console.log("hey");
 
                 decryptBinary(privateKey,'testtest',publicKey,decryptedDir+".message.json", decryptedDir+"..message.json").then(function () {
@@ -638,15 +638,30 @@ async function unzipAndDecrypt(zipName,publicKey)
 
                     fs.unlinkSync(decryptedDir+".message.json");
                     var messageLog = JSON.parse(fs.readFileSync(decryptedDir+"..message.json"));
-                    var counter = Object.keys(messageLog).length;
+                    var counter = Object.keys(messageLog).length - 1;
                     console.log("counter is  "+counter);
                     console.log(messageLog);
                     Object.keys(messageLog).forEach(function(key) {
-                        console.log()
+                        if(key !== 'subject')
                             decryptBinary(privateKey,'testtest',publicKey,decryptedDir+messageLog[key],decryptedDir+key).then(function () {
                                 counter -=1;
                                 if(counter ===0)
                                 {
+                                    var inbox = JSON.parse(fs.readFileSync(inboxDir+"inbox.json"));
+                                    var newMail = {};
+                                    newMail.sender= sender;
+                                    newMail.date="21.06.2019";
+                                    newMail.folder = path.basename(decryptedDir);
+                                    newMail.subject = messageLog['subject'];
+                                    var attachemnts = [];
+                                    Object.keys(messageLog).forEach(function(key)
+                                    {
+                                        if((key !== ".text.txt") && (key !== "subject"))
+                                            attachemnts.push(key);
+                                    });
+                                    newMail.attachments=attachemnts;
+                                    inbox.push(newMail)
+                                    fs.writeFileSync(inboxDir+"inbox.json",JSON.stringify(inbox));
                                     console.log("Finished unzipping");
                                     writeLock.unlock();
                                 }
@@ -738,6 +753,8 @@ ipcMain.on("compose:send", function (e,data) {
 
 async function sendEmail(data)
 {
+    console.log("sneding email - ");
+    console.log(data);
     var attachments = fileNames.slice();
     //attachments[0] = "not my attachment";
     fileNames = [];
@@ -761,6 +778,7 @@ async function sendEmail(data)
         });
         originalNames[tmpDir+".text.txt"] = randomStr;
         var messageLog = {};
+        messageLog['subject'] = data.subject;
         Object.keys(originalNames).forEach(function(key) {
             //console.log(key, originalNames[key]);
             messageLog[path.basename(key)] = originalNames[key];
