@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+    <!-- normal script imports etc  -->
+    <link rel="stylesheet" href="../extensions/materialize/css/materialize.min.css">
+    <link rel="stylesheet" href="../extensions/design.css">
+
+    <script type="text/javascript" src="../extensions/jquery/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../extensions/materialize/js/materialize.js"></script>
+    <!-- Insert this line after script imports -->
+    <script>if (window.module) module = window.module;</script>
+</head>
+<body>
+<form id="addContactForm">
+    <div class="input-field"><label> Name</label> <br> <input type="text" name="name" > </div> <br>
+    <div class="input-field"><label> Email</label> <br> <input type="text" name="email" > </div> <br>
+    <div class="input-field"><label> Public Key </label> <br> <textarea id="pkeyTextArea" cols="40" readonly style="min-height: 20px"> </textarea> </div> <br>
+    <div class="input-field"><label> Key FingerPrint</label> <br> <input type="text" name="pkeyFingerprint" id="pkeyFingerprint" readonly> </div>
+    <button id="addPkeyButton">Add Public Key</button> <br>
+    <input type="submit" value="Add contact">
+</form>
+ <script>
+     const ipcRenderer = require('electron').ipcRenderer;
+
+    $("#addPkeyButton").click(function (e)
+    {
+       e.preventDefault();
+       ipcRenderer.send("adressBook:addPKey",true);
+    });
+
+    ipcRenderer.on("adressBook:pkeyAdded",function (e,data) {
+        console.log(data);
+       $("#pkeyTextArea").text(data.path);
+       $("#pkeyFingerprint").val(data.fingerprint);
+    });
+
+    $("#addContactForm").submit(function (e)
+    {
+       e.preventDefault();
+        var formData = $(this).serializeArray();
+        var o = {};
+        $.each(formData, function() {
+            if (o[this.name]) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        formData = o;
+        formData.pkey = $("#pkeyTextArea").text();
+        delete formData.pkeyFingerprint;
+        console.log(formData);
+        ipcRenderer.send("adressBook:contactAdded",formData);
+    });
+
+ </script>
+</body>
+</html>

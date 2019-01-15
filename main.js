@@ -261,7 +261,7 @@ ipcMain.on("inbox:seeMail", function(e,data)
 
 ipcMain.on("compose", function (e,data) {
     fileNames = [];
-    createSubWindow("lol", "pages/sent.html",
+    createSubWindow("Compose new Email", "pages/sent.html",
         600,800);
 });
 
@@ -318,7 +318,73 @@ ipcMain.on("adressBook", function (e,data) {
     }
 
 
-})
+});
+
+ipcMain.on("adressBook:addContact", function(e,data)
+{
+    createSubWindow("Add Contact","pages/addContact.html",600,800);
+});
+
+function toHexString(byteArray) {
+    return Array.prototype.map.call(byteArray, function(byte) {
+        return ('0' + (byte & 0xFF).toString(16)).slice(-2);
+    }).join('');
+}
+
+function toByteArray(hexString) {
+    var result = [];
+    while (hexString.length >= 2) {
+        result.push(parseInt(hexString.substring(0, 2), 16));
+        hexString = hexString.substring(2, hexString.length);
+    }
+    return result;
+}
+
+async function readPublicKey(filePath)
+{
+    try {
+        var pubKeyFile = fs.readFileSync(filePath);
+        console.log(pubKeyFile);
+        var publicKeys = (await openpgp.key.readArmored(pubKeyFile)).keys;
+        //console.log(typeof publicKeys[0]);
+        console.log("GOT HERE");
+        //console.log(publicKeys);
+        var id = publicKeys[0].keyPacket;
+        //console.log(id);
+        //console.log(id instanceof openpgp.PublicKey);
+        console.log(id.fingerprint);
+        return id.fingerprint;
+    }
+    catch (e) {
+        console.log("error is");
+        console.log(e);
+        return "error";
+    }
+
+}
+ipcMain.on("adressBook:addPKey",function(e,data)
+{
+    dialog.showOpenDialog({properties: ['openFile']},function(filenames) {
+       if(filenames === undefined)
+           return;
+       readPublicKey(filenames[0]).then(function (res)
+       {
+           console.log(res);
+           if(res === "error") {
+               console.log("File is not a public key");
+           }
+           else {
+               var data = {};
+               data.path = filenames[0];
+               data.fingerprint = toHexString(res);
+               subWindow.webContents.send("adressBook:pkeyAdded", data);
+           }
+
+
+       })
+
+    });
+});
 /*ipcMain.on("mailContent", function (e,data) {
     console.log("lol");
 })*/
@@ -868,7 +934,7 @@ ipcMain.on("decryptFile",function(e,data) {
             //fileNames.push(filenames[0]);
         });
     });
-})
+});
 /*function connection()
 {
 	var Agent = require('socks5-http-client/lib/Agent');

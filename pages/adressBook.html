@@ -30,5 +30,6 @@
     })
     $("#addContact").click(function (e) {
         e.preventDefault();
+        ipcRenderer.send("adressBook:addContact",true);
     })
 </script>
