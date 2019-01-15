@@ -4,9 +4,8 @@
     <list default="true" id="4a38f517-a5a3-4251-9170-5d992e6e12cd" name="Default Changelist" comment="Adding inbox">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/inbox/inbox.json" beforeDir="false" afterPath="$PROJECT_DIR$/inbox/inbox.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.html" beforeDir="false" afterPath="$PROJECT_DIR$/main.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/outbox/outbox.json" beforeDir="false" afterPath="$PROJECT_DIR$/outbox/outbox.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tmp/.text.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tmp/a.txt" beforeDir="false" />
     </list>
@@ -30,7 +29,8 @@
           <entry key="project.open.time.40" value="1" />
           <entry key="project.open.time.5" value="1" />
           <entry key="project.open.time.67" value="1" />
-          <entry key="project.opened" value="6" />
+          <entry key="project.open.time.76" value="1" />
+          <entry key="project.opened" value="7" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -38,9 +38,9 @@
           <entry key="LICENSE" value="1" />
           <entry key="css" value="3" />
           <entry key="gitignore" value="2" />
-          <entry key="html" value="33" />
+          <entry key="html" value="35" />
           <entry key="js" value="16" />
-          <entry key="json" value="5" />
+          <entry key="json" value="6" />
           <entry key="priv_key" value="1" />
           <entry key="pub_key" value="1" />
           <entry key="sign_key" value="1" />
@@ -49,8 +49,8 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CSS" value="3" />
-          <entry key="HTML" value="33" />
-          <entry key="JSON" value="5" />
+          <entry key="HTML" value="35" />
+          <entry key="JSON" value="6" />
           <entry key="JavaScript" value="16" />
           <entry key="PLAIN_TEXT" value="6" />
         </counts>
@@ -58,34 +58,22 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="gitignore" value="18" />
-          <entry key="html" value="5726" />
-          <entry key="js" value="8440" />
-          <entry key="txt" value="338" />
+          <entry key="html" value="5796" />
+          <entry key="js" value="9684" />
+          <entry key="txt" value="414" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="HTML" value="5726" />
-          <entry key="JavaScript" value="8440" />
-          <entry key="PLAIN_TEXT" value="356" />
+          <entry key="HTML" value="5796" />
+          <entry key="JavaScript" value="9684" />
+          <entry key="PLAIN_TEXT" value="432" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/inbox.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-452">
-              <caret line="17" selection-start-line="17" selection-end-line="17" />
-              <folding>
-                <element signature="n#style#0;n#tbody#0;n#table#0;n#div#0;n#!!top" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pages/encrypt.html">
           <provider selected="true" editor-type-id="text-editor">
@@ -105,15 +93,15 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/keygen.html">
+        <entry file="file://$PROJECT_DIR$/pages/outbox.html">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/adressBook.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1360">
-              <caret line="80" column="13" selection-start-line="80" selection-start-column="13" selection-end-line="80" selection-end-column="13" />
-              <folding>
-                <element signature="n#style#0;n#textarea#0;n#div#0;n#div#3;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#textarea#0;n#div#0;n#div#4;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#textarea#0;n#div#0;n#div#5;n#div#0;n#!!top" expanded="true" />
-              </folding>
+            <state relative-caret-position="578">
+              <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
             </state>
           </provider>
         </entry>
@@ -127,11 +115,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="502">
-              <caret line="658" column="85" selection-start-line="658" selection-start-column="85" selection-end-line="658" selection-end-column="85" />
+            <state relative-caret-position="11288">
+              <caret line="838" column="9" lean-forward="true" selection-start-line="838" selection-start-column="9" selection-end-line="838" selection-end-column="9" />
             </state>
           </provider>
         </entry>
@@ -139,17 +127,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pages/sent.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="561">
-              <caret line="84" column="10" selection-start-line="84" selection-start-column="10" selection-end-line="84" selection-end-column="10" />
+            <state relative-caret-position="281">
+              <caret line="30" column="42" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="42" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="19" column="86" selection-start-line="19" selection-start-column="86" selection-end-line="19" selection-end-column="86" />
+            <state relative-caret-position="119">
+              <caret line="7" column="16" lean-forward="true" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
             </state>
           </provider>
         </entry>
@@ -162,8 +150,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pages/mailContent.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="435">
-              <caret line="57" column="61" selection-start-line="57" selection-start-column="7" selection-end-line="57" selection-end-column="61" />
+            <state relative-caret-position="1173">
+              <caret line="69" column="19" selection-start-line="69" selection-start-column="19" selection-end-line="69" selection-end-column="19" />
             </state>
           </provider>
         </entry>
@@ -173,23 +161,13 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="JavaScript File" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>revocationCertificate</find>
-      <find>signa</find>
-      <find>keygen:keyex</find>
-      <find>keypatch</find>
-      <find>keygen:key</find>
-      <find>mainWindow</find>
-      <find>urlSOS</find>
-      <find>account</find>
-      <find>keygen</find>
-      <find>accoun</find>
       <find>keygen:ke</find>
       <find>keyex</find>
       <find>SOS</find>
@@ -202,11 +180,24 @@
       <find>encryptAndZIp</find>
       <find>subWindow</find>
       <find>unzip</find>
-      <find>unzipAndDecrypt</find>
-      <find>encryptAndZip</find>
       <find>data</find>
       <find>compose</find>
+      <find>encryptAndZip</find>
+      <find>unzipAndDecrypt</find>
+      <find>Date()</find>
+      <find>option</find>
+      <find>contacts</find>
       <find>sendEmail</find>
+      <find>account</find>
+      <find>email</find>
+      <find>sendE</find>
+      <find>sendEm</find>
+      <find>decrypt</find>
+      <find>unzipandde</find>
+      <find>sendEma</find>
+      <find>outboxDir</find>
+      <find>unzipandDec</find>
+      <find>outbox.</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -220,13 +211,14 @@
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/pages/inbox.html" />
         <option value="$PROJECT_DIR$/adressbook/adressbook.js" />
-        <option value="$PROJECT_DIR$/pages/outbox.html" />
         <option value="$PROJECT_DIR$/extensions/scripts.js" />
-        <option value="$PROJECT_DIR$/main.html" />
         <option value="$PROJECT_DIR$/pages/account.html" />
         <option value="$PROJECT_DIR$/pages/mailContent.html" />
         <option value="$PROJECT_DIR$/pages/sent.html" />
         <option value="$PROJECT_DIR$/main.js" />
+        <option value="$PROJECT_DIR$/pages/outbox.html" />
+        <option value="$PROJECT_DIR$/pages/adressBook.html" />
+        <option value="$PROJECT_DIR$/main.html" />
       </list>
     </option>
   </component>
@@ -279,6 +271,12 @@
               <item name="secure_mailing_school_pgp" type="b2602c69:ProjectViewProjectNode" />
               <item name="secure_mailing_school_pgp" type="462c0819:PsiDirectoryNode" />
               <item name="extensions" type="462c0819:PsiDirectoryNode" />
+              <item name="jquery" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="secure_mailing_school_pgp" type="b2602c69:ProjectViewProjectNode" />
+              <item name="secure_mailing_school_pgp" type="462c0819:PsiDirectoryNode" />
+              <item name="extensions" type="462c0819:PsiDirectoryNode" />
               <item name="materialize" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -291,17 +289,17 @@
             <path>
               <item name="secure_mailing_school_pgp" type="b2602c69:ProjectViewProjectNode" />
               <item name="secure_mailing_school_pgp" type="462c0819:PsiDirectoryNode" />
-              <item name="inbox" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="secure_mailing_school_pgp" type="b2602c69:ProjectViewProjectNode" />
-              <item name="secure_mailing_school_pgp" type="462c0819:PsiDirectoryNode" />
               <item name="keys" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="secure_mailing_school_pgp" type="b2602c69:ProjectViewProjectNode" />
               <item name="secure_mailing_school_pgp" type="462c0819:PsiDirectoryNode" />
               <item name="pages" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="secure_mailing_school_pgp" type="b2602c69:ProjectViewProjectNode" />
+              <item name="secure_mailing_school_pgp" type="462c0819:PsiDirectoryNode" />
+              <item name="profile" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -366,7 +364,8 @@
       <workItem from="1544198784644" duration="20411000" />
       <workItem from="1547175852660" duration="50176000" />
       <workItem from="1547306507335" duration="1521000" />
-      <workItem from="1547376317431" duration="29135000" />
+      <workItem from="1547376317431" duration="43851000" />
+      <workItem from="1547568049987" duration="1633000" />
     </task>
     <task id="LOCAL-00001" summary="Adding inbox">
       <created>1547273621188</created>
@@ -452,17 +451,31 @@
       <option name="project" value="LOCAL" />
       <updated>1547445927543</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Unzipping and decrypting - working conditions">
+      <created>1547449064774</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1547449064774</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Added outbox and adressbook">
+      <created>1547570151071</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1547570151071</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="114461000" />
+    <option name="totallyTimeSpent" value="130810000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17913593" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.12802951" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="npm" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
@@ -501,7 +514,9 @@
     <MESSAGE value="Adding and removing attachments" />
     <MESSAGE value="Writing files to zip, locks" />
     <MESSAGE value="Decrypting emails" />
-    <option name="LAST_COMMIT_MESSAGE" value="Decrypting emails" />
+    <MESSAGE value="Unzipping and decrypting - working conditions" />
+    <MESSAGE value="Added outbox and adressbook" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added outbox and adressbook" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/package-lock.json">
@@ -560,9 +575,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/inbox/inbox.json">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/outbox/outbox.json">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -581,46 +593,23 @@
     <entry file="file://$PROJECT_DIR$/extensions/materialize/js/materialize.js">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/pages/outbox.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" column="9" selection-start-line="13" selection-start-column="8" selection-end-line="15" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pages/keygen.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1360">
           <caret line="80" column="13" selection-start-line="80" selection-start-column="13" selection-end-line="80" selection-end-column="13" />
-          <folding>
-            <element signature="n#style#0;n#textarea#0;n#div#0;n#div#3;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#textarea#0;n#div#0;n#div#4;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#textarea#0;n#div#0;n#div#5;n#div#0;n#!!top" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/extensions/scripts.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="561">
-          <caret line="33" column="12" selection-start-line="33" selection-start-column="12" selection-end-line="33" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="19" column="86" selection-start-line="19" selection-start-column="86" selection-end-line="19" selection-end-column="86" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/adressbook/adressbook.json">
+    <entry file="file://$PROJECT_DIR$/inbox/inbox.json">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/pages/account.html">
+    <entry file="file://$PROJECT_DIR$/pages/inbox.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="23" column="63" selection-start-line="23" selection-start-column="63" selection-end-line="23" selection-end-column="63" />
+        <state relative-caret-position="136">
+          <caret line="8" column="32" selection-start-line="8" selection-start-column="12" selection-end-line="8" selection-end-column="32" />
+          <folding>
+            <element signature="n#style#0;n#tbody#0;n#table#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -631,34 +620,58 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pages/inbox.html">
+    <entry file="file://$PROJECT_DIR$/pages/account.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-452">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
-          <folding>
-            <element signature="n#style#0;n#tbody#0;n#table#0;n#div#0;n#!!top" expanded="true" />
-          </folding>
+        <state relative-caret-position="391">
+          <caret line="23" column="63" selection-start-line="23" selection-start-column="63" selection-end-line="23" selection-end-column="63" />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/adressbook/adressbook.json">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/pages/mailContent.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="57" column="61" selection-start-line="57" selection-start-column="7" selection-end-line="57" selection-end-column="61" />
+        <state relative-caret-position="1173">
+          <caret line="69" column="19" selection-start-line="69" selection-start-column="19" selection-end-line="69" selection-end-column="19" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pages/sent.html">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="30" column="42" selection-start-line="30" selection-start-column="37" selection-end-line="30" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/outbox.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/adressBook.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="578">
+          <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/extensions/scripts.js">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="561">
-          <caret line="84" column="10" selection-start-line="84" selection-start-column="10" selection-end-line="84" selection-end-column="10" />
+          <caret line="33" column="12" selection-start-line="33" selection-start-column="12" selection-end-line="33" selection-end-column="12" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="502">
-          <caret line="658" column="85" selection-start-line="658" selection-start-column="85" selection-end-line="658" selection-end-column="85" />
+        <state relative-caret-position="11288">
+          <caret line="838" column="9" lean-forward="true" selection-start-line="838" selection-start-column="9" selection-end-line="838" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="16" lean-forward="true" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
         </state>
       </provider>
     </entry>
