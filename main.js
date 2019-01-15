@@ -13,6 +13,7 @@ const keyPatch = path.join(__dirname, 'keys/');
 const profileDir = path.join(__dirname, 'profile/');
 const inboxDir = path.join(__dirname, 'inbox/');
 const addressDir = path.join(__dirname,'adressbook/');
+const outboxDir = path.join(__dirname,"outbox/");
 const tmpDir  = path.join(__dirname, 'tmp/');
 const keyNames = ['priv_key', 'pub_key', 'revocation',];
 const archiver = require('archiver');
@@ -229,7 +230,7 @@ ipcMain.on("inbox", function (e,data) {
     else
     {
         var inbox = [];
-        fs.writeFile(inboxDir+"inbox.json",JSON.stringify(inbox));
+        fs.writeFileSync(inboxDir+"inbox.json",JSON.stringify(inbox));
         mainWindow.send('inbox', inbox);
     }
 });
@@ -585,7 +586,7 @@ async function encryptAndZip(zipName,publicKey ,fileList)
         });
         fs.unlinkSync(tmpDir+".text.txt");
         writeLock.unlock();
-        unzipAndDecrypt(path.basename( zipName),publicKey,"sheaxer@elude.in");
+        unzipAndDecrypt(path.basename( zipName),publicKey);
 
     })
     var output = fs.createWriteStream(tmpDir+zipName);
@@ -610,7 +611,7 @@ async function encryptAndZip(zipName,publicKey ,fileList)
     });
 
 }
-async function unzipAndDecrypt(zipName,publicKey,sender)
+async function unzipAndDecrypt(zipName,publicKey)
 {
     var decryptedDir = zipName;
     console.log("decrypt zip is");
@@ -638,29 +639,42 @@ async function unzipAndDecrypt(zipName,publicKey,sender)
 
                     fs.unlinkSync(decryptedDir+".message.json");
                     var messageLog = JSON.parse(fs.readFileSync(decryptedDir+"..message.json"));
-                    var counter = Object.keys(messageLog).length - 1;
-                    console.log("counter is  "+counter);
-                    console.log(messageLog);
-                    Object.keys(messageLog).forEach(function(key) {
-                        if(key !== 'subject')
-                            decryptBinary(privateKey,'testtest',publicKey,decryptedDir+messageLog[key],decryptedDir+key).then(function () {
+                    var counter = Object.keys(messageLog.attachments).length;
+                    //console.log("counter is  "+counter);
+                    //console.log(messageLog);
+                    Object.keys(messageLog.attachments).forEach(function(key) {
+
+                            decryptBinary(privateKey,'testtest',publicKey,decryptedDir+messageLog.attachments[key],decryptedDir+key).then(function () {
                                 counter -=1;
                                 if(counter ===0)
                                 {
+                                    console.log("I have to go clean up");
                                     var inbox = JSON.parse(fs.readFileSync(inboxDir+"inbox.json"));
                                     var newMail = {};
-                                    newMail.sender= sender;
-                                    newMail.date="21.06.2019";
-                                    newMail.folder = path.basename(decryptedDir);
+                                    //newMail.sender= sender;
+                                    newMail.date=messageLog.date;
+
                                     newMail.subject = messageLog['subject'];
-                                    var attachemnts = [];
-                                    Object.keys(messageLog).forEach(function(key)
+                                    newMail.sender = messageLog.sender;
+                                    var attachments = [];
+                                    Object.keys(messageLog.attachments).forEach(function(key)
                                     {
-                                        if((key !== ".text.txt") && (key !== "subject"))
-                                            attachemnts.push(key);
+                                        console.log("Pushing attachment ");
+                                        console.log(key);
+                                        console.log(messageLog.attachments[key]);
+                                        if(key !== ".text.txt")
+                                            attachments.push(key);
+                                        fs.unlinkSync(decryptedDir+messageLog.attachments[key]);
                                     });
-                                    newMail.attachments=attachemnts;
-                                    inbox.push(newMail)
+                                    newMail.attachments=attachments;
+                                    fs.unlinkSync(decryptedDir+"..message.json");
+                                    fs.writeFileSync(decryptedDir+".message.json",JSON.stringify(newMail));
+                                    newMail.folder = path.basename(decryptedDir);
+                                    inbox.push(newMail);
+                                    console.log("inbox: ");
+                                    console.log(inbox);
+                                    //fs.unlinkSync(decryptedDir+".message.json");
+
                                     fs.writeFileSync(inboxDir+"inbox.json",JSON.stringify(inbox));
                                     console.log("Finished unzipping");
                                     writeLock.unlock();
@@ -753,6 +767,7 @@ ipcMain.on("compose:send", function (e,data) {
 
 async function sendEmail(data)
 {
+
     console.log("sneding email - ");
     console.log(data);
     var attachments = fileNames.slice();
@@ -761,10 +776,24 @@ async function sendEmail(data)
 
     writeLock.lock(function ()
     {
+        var zipName = randomstring.generate({
+            charset: 'alphanumeric'
+        });
+        var existsBool = fs.existsSync(outboxDir+zipName);
+        while(existsBool === true)
+        {
+            zipName = randomstring.generate({
+                charset: 'alphanumeric'
+            });
+            existsBool = fs.existsSync(outboxDir+zipName);
+        }
+        fs.mkdirSync(outboxDir+zipName);
         fs.writeFileSync(tmpDir+".text.txt", data.text);
+        fs.writeFileSync(path.join(outboxDir,zipName+"/")+".text.txt", data.text);
         var originalNames = {};
         var randomStr;
-
+        var outboxMessage = {};
+        outboxMessage.recipient = data.recipient;
         var attLength = attachments.length;
         for(var i=0; i< attLength; i++)
         {
@@ -772,6 +801,7 @@ async function sendEmail(data)
                 charset: 'alphanumeric'
             });
             originalNames[attachments[i]] = randomStr;
+            fs.copyFileSync(attachments[i],path.join(outboxDir,zipName+"/")+path.basename(attachments[i]))
         }
         randomStr= randomstring.generate({
             charset: 'alphanumeric'
@@ -779,20 +809,38 @@ async function sendEmail(data)
         originalNames[tmpDir+".text.txt"] = randomStr;
         var messageLog = {};
         messageLog['subject'] = data.subject;
+        outboxMessage.subjet = data.subject;
+        var date = new Date();
+        messageLog['date'] = date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear() +" " + date.getHours() + ":" + (date.getMinutes() < 10 ? ("0" + date.getMinutes()) : date.getMinutes()  );
+        outboxMessage.date = date;
+        outboxMessage.attachments = [];
+        outboxMessage.folder = zipName;
+        var att = {};
         Object.keys(originalNames).forEach(function(key) {
             //console.log(key, originalNames[key]);
-            messageLog[path.basename(key)] = originalNames[key];
+            outboxMessage.attachments.push(path.basename(key));
+            att[path.basename(key)] = originalNames[key];
         });
+        console.log(outboxMessage);
+        messageLog.attachments = att;
+        messageLog.sender = (JSON.parse(fs.readFileSync(profileDir+"profile.json"))).userName;
+        fs.writeFileSync(path.join(outboxDir,zipName+"/")+".message.json",JSON.stringify(outboxMessage));
         fs.writeFileSync(tmpDir+".message.json",JSON.stringify(messageLog));
         originalNames[tmpDir+".message.json"]=".message.json";
         var publicKey= fs.readFileSync(keyPatch+keyNames[1]);
-
-
-
+        if(!fs.existsSync(outboxDir+"outbox.json"))
+            fs.writeFileSync(outboxDir+"outbox.json",JSON.stringify([]));
+        var outbox;
+        try{
+            outbox = JSON.parse(fs.readFileSync(outboxDir+"outbox.json"));
+        }
+        catch (e) {
+            outbox = [];
+        }
+        outbox.push(outboxMessage);
+        fs.writeFileSync(outboxDir+"outbox.json",JSON.stringify(outbox));
         // encrpyt all files and zip them please
-        var zipName = randomstring.generate({
-            charset: 'alphanumeric'
-        });
+
         encryptAndZip(zipName,publicKey,originalNames);
         //put here encryption have to redo zipFiles function
 

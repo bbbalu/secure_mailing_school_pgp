@@ -56,7 +56,7 @@
                 var opt  = $("<option>");
                 opt.data(data[i]);
                 console.log(opt.data());
-                opt.attr("value",i);
+                opt.attr("value",data[i].email);
                 opt.text('"'+ data[i].name +  '" ' + data[i].email );
                 $("#recipientSelect").append(opt);
             }

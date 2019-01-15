@@ -67,7 +67,7 @@
         {
             var a = $("<a>");
             a.attr("href",data.folder+data.attachments[i]);
-            a.text(data.folder+data.attachments[i]);
+            a.text(data.attachments[i]);
             a.click(function (e) {
                 e.preventDefault();
                 console.log($(this).attr("href"));
