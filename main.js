@@ -868,6 +868,49 @@ ipcMain.on("zipFiles",function(e,data)
 	});
 })
 
+ipcMain.on("outbox", function (e,data) {
+    var existsBool = fs.existsSync(outboxDir+"outbox.json");
+    var outbox = [];
+    if(existsBool)
+    {
+        try{
+            outbox = JSON.parse(fs.readFileSync(outboxDir+"outbox.json"));
+        }
+        catch (e) {
+            
+        }
+    }
+    else
+    {
+        fs.writeFileSync(outboxDir+"outbox.json",JSON.stringify([]));
+    }
+    mainWindow.webContents.send("outbox",outbox);
+});
+
+ipcMain.on("outbox:seeMail",function(e,data)
+{
+    var d = path.join(inboxDir+ data.folder + "/");
+    //console.log(d);
+    var textFile = fs.readFileSync(d+".text.txt",'utf8');
+    var info = data;
+    info.folder = d;
+    info.text = textFile;
+    /*{
+        folder : d,
+        attachments: data.attachments,
+        text: textFile,
+        index : data.index
+    }*/
+    //console.log(info);
+    createSubWindow("Outbox Message", "pages/outboxMessage.html",
+        600,800);
+    subWindow.webContents.on('did-finish-load', () => {
+        subWindow.webContents.send('message', 'Hello second window!');
+        subWindow.webContents.send("outbox:message",info);
+    });
+});
+
+
 ipcMain.on("compose:removeAttachment", function (e,data) {
    console.log(data);
    var index = fileNames.indexOf(data);
@@ -926,10 +969,10 @@ async function sendEmail(data)
         originalNames[tmpDir+".text.txt"] = randomStr;
         var messageLog = {};
         messageLog['subject'] = data.subject;
-        outboxMessage.subjet = data.subject;
+        outboxMessage.subject = data.subject;
         var date = new Date();
         messageLog['date'] = date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear() +" " + date.getHours() + ":" + (date.getMinutes() < 10 ? ("0" + date.getMinutes()) : date.getMinutes()  );
-        outboxMessage.date = date;
+        outboxMessage.date = date.getDate() + "." + (date.getMonth()+1) + "." + date.getFullYear() +" " + date.getHours() + ":" + (date.getMinutes() < 10 ? ("0" + date.getMinutes()) : date.getMinutes()  );
         outboxMessage.attachments = [];
         outboxMessage.folder = zipName;
         var att = {};
