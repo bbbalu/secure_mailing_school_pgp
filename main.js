@@ -12,7 +12,7 @@ const appTitle = "TP secure mail";
 const keyPatch = path.join(__dirname, 'keys/');
 const profileDir = path.join(__dirname, 'profile/');
 const inboxDir = path.join(__dirname, 'inbox/');
-const addressDir = path.join(__dirname,'adressbook/');
+const addressDir = path.join(__dirname,'addressbook/');
 const outboxDir = path.join(__dirname,"outbox/");
 const tmpDir  = path.join(__dirname, 'tmp/');
 const keyNames = ['priv_key', 'pub_key', 'revocation',];
@@ -237,9 +237,9 @@ ipcMain.on("inbox", function (e,data) {
 
 ipcMain.on("inbox:seeMail", function(e,data)
 {
-    console.log(data);
+    //console.log(data);
     var d = path.join(inboxDir+ data.folder + "/");
-    console.log(d);
+    //console.log(d);
     var textFile = fs.readFileSync(d+".text.txt",'utf8');
     var info = data;
     info.folder = d;
@@ -250,7 +250,7 @@ ipcMain.on("inbox:seeMail", function(e,data)
         text: textFile,
         index : data.index
     }*/
-    console.log(info);
+    //console.log(info);
     createSubWindow("lol", "pages/mailContent.html",
         600,800);
     subWindow.webContents.on('did-finish-load', () => {
@@ -267,60 +267,60 @@ ipcMain.on("compose", function (e,data) {
 
 ipcMain.on("compose:getContacts", function(e, data)
 {
-    var existsBool = fs.existsSync(addressDir + "adressbook.json");
+    var existsBool = fs.existsSync(addressDir + "addressbook.json");
     if(existsBool === true)
     {
         console.log("hey");
         try{
-            var adressBook = JSON.parse(fs.readFileSync(addressDir + "adressbook.json"));
-            console.log(adressBook)
-            subWindow.webContents.send("compose:getContacts",adressBook);
+            var addressBook = JSON.parse(fs.readFileSync(addressDir + "addressbook.json"));
+            console.log(addressBook)
+            subWindow.webContents.send("compose:getContacts",addressBook);
 
         }
         catch (e) {
-            var adressBook = [];
-            fs.writeFileSync(addressDir + "adressbook.json",JSON.stringify(adresBook));
-            subWindow.webContents.send("compose:getContacts",adressBook);
+            var addressBook = [];
+            fs.writeFileSync(addressDir + "addressbook.json",JSON.stringify(addressBook));
+            subWindow.webContents.send("compose:getContacts",addressBook);
         }
     }
     else
     {
-        var adressBook = [];
-        fs.writeFileSync(addressDir + "adressbook.json",JSON.stringify(adresBook));
-        subWindow.webContents.send("compose:getContacts",adressBook);
+        var addressBook = [];
+        fs.writeFileSync(addressDir + "addressbook.json",JSON.stringify(addressBook));
+        subWindow.webContents.send("compose:getContacts",addressBook);
 
     }
 });
 
-ipcMain.on("adressBook", function (e,data) {
-    var existsBool = fs.existsSync(addressDir + "adressbook.json");
+ipcMain.on("addressBook", function (e,data) {
+    var existsBool = fs.existsSync(addressDir + "addressbook.json");
     if(existsBool === true)
     {
         console.log("hey");
         try{
-            var adressBook = JSON.parse(fs.readFileSync(addressDir + "adressbook.json"));
-            console.log(adressBook)
-            mainWindow.webContents.send("adressBook",adressBook);
+            var addressBook = JSON.parse(fs.readFileSync(addressDir + "addressbook.json"));
+            console.log(addressBook)
+            mainWindow.webContents.send("addressBook",addressBook);
 
         }
         catch (e) {
-            var adressBook = [];
-            fs.writeFileSync(addressDir + "adressbook.json",JSON.stringify(adresBook));
-            mainWindow.webContents.send("adressBook",adressBook);
+            var addressBook = [];
+            fs.writeFileSync(addressDir + "addressbook.json",JSON.stringify(addressBook));
+            mainWindow.webContents.send("addressBook",addressBook);
         }
     }
     else
     {
-        var adressBook = [];
-        fs.writeFileSync(addressDir + "adressbook.json",JSON.stringify(adresBook));
-        mainWindow.webContents.send("adressBook",adressBook);
+        var addressBook = [];
+        fs.writeFileSync(addressDir + "addressbook.json",JSON.stringify(addressBook));
+        mainWindow.webContents.send("addressBook",addressBook);
 
     }
 
 
 });
 
-ipcMain.on("adressBook:addContact", function(e,data)
+ipcMain.on("addressBook:addContact", function(e,data)
 {
     createSubWindow("Add Contact","pages/addContact.html",600,800);
 });
@@ -344,7 +344,7 @@ async function readPublicKey(filePath)
 {
     try {
         var pubKeyFile = fs.readFileSync(filePath);
-        console.log(pubKeyFile);
+        //console.log(pubKeyFile);
         var publicKeys = (await openpgp.key.readArmored(pubKeyFile)).keys;
         //console.log(typeof publicKeys[0]);
         console.log("GOT HERE");
@@ -352,7 +352,7 @@ async function readPublicKey(filePath)
         var id = publicKeys[0].keyPacket;
         //console.log(id);
         //console.log(id instanceof openpgp.PublicKey);
-        console.log(id.fingerprint);
+        //console.log(id.fingerprint);
         return id.fingerprint;
     }
     catch (e) {
@@ -362,7 +362,7 @@ async function readPublicKey(filePath)
     }
 
 }
-ipcMain.on("adressBook:addPKey",function(e,data)
+ipcMain.on("addressBook:addPKey",function(e,data)
 {
     dialog.showOpenDialog({properties: ['openFile']},function(filenames) {
        if(filenames === undefined)
@@ -377,13 +377,71 @@ ipcMain.on("adressBook:addPKey",function(e,data)
                var data = {};
                data.path = filenames[0];
                data.fingerprint = toHexString(res);
-               subWindow.webContents.send("adressBook:pkeyAdded", data);
+               subWindow.webContents.send("addressBook:pkeyAdded", data);
            }
 
 
        })
 
     });
+});
+
+function validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
+
+ipcMain.on("addressBook:contactAdded",function (e, data)
+{
+    var isEmail = validateEmail(data.email);
+    if(isEmail)
+    {
+        if(data.name !== "") {
+            try
+            {
+                console.log("Data - pkey");
+                console.log(data.pkey);
+                console.log("PKEY ended");
+                readPublicKey(data.pkey);
+                var newContact = {};
+                newContact.name = data.name;
+                newContact.email = data.email;
+                var keyName = data.email+"-pub_key";
+                var exitsBool = fs.existsSync(addressDir+keyName);
+                var i=0;
+                while(exitsBool === true)
+                {
+                    keyName =  data.email + "-" + i +"pub_key";
+                    i+=1;
+                    exitsBool = fs.existsSync(keyPatch+keyName)
+                }
+                fs.copyFileSync(data.pkey,addressDir+keyName);
+                newContact.key = keyName;
+                var addressBook = [];
+                if(fs.existsSync(addressDir + "addressbook.json"))
+                    addressBook = JSON.parse(fs.readFileSync(addressDir + "addressbook.json"));
+                addressBook.push(newContact);
+                console.log("Adding new contact");
+                console.log(newContact);
+                console.log(addressBook);
+                fs.writeFileSync(addressDir+"addressbook.json",JSON.stringify(addressBook));
+            }
+            catch (e) {
+                console.log("caught errorrrz");
+                console.log(e);
+            }
+        }
+        else
+        {
+            console.log("name is empty");
+        }
+        //if((data.name !== "")&& ())
+    }
+    else
+    {
+        console.log("is not email");
+    }
+
 });
 /*ipcMain.on("mailContent", function (e,data) {
     console.log("lol");
@@ -394,7 +452,7 @@ async function encrypt(privkey,passphrase,pubkey, message) {
     var privKeyObj = (await openpgp.key.readArmored(privkey)).keys[0];
 	var publicKeys = (await openpgp.key.readArmored(pubkey)).keys;
     await privKeyObj.decrypt(passphrase)
-	console.log(publicKeys);
+
 	var options = {
 		message: openpgp.message.fromText(message),
 		publicKeys: publicKeys,
@@ -452,9 +510,7 @@ async function decrypt(privkey,passphrase,message)
 
 async function decryptBinary(privkey,passphrase,pubkey,sourceFile,destFile)
 {
-    console.log("Decrypt Binary started");
-	console.log(sourceFile)
-	console.log(destFile)
+
     var privKeyObj = (await openpgp.key.readArmored(privkey)).keys[0];
     await privKeyObj.decrypt(passphrase);
     var publicKeys = (await openpgp.key.readArmored(pubkey)).keys;
@@ -521,7 +577,7 @@ var fileNames = [];
 
 function addFileToZip()
 {
-    console.log("yes");
+
     dialog.showOpenDialog({properties: ['openFile']},function(filenames) {
         if (filenames === undefined)
             return;
@@ -614,7 +670,7 @@ async function zipFiles()
                         counter -= 1;
                         if(counter === 0)
                         {
-                            console.log("Finished counting");
+                            //console.log("Finished counting");
                             archive.finalize();
                         }
                     });
@@ -646,7 +702,7 @@ async function encryptAndZip(zipName,publicKey ,fileList)
     });
     archive.on('finish',function()
     {
-        console.log("finished zipping file = " + zipName);
+
         Object.keys(fileList).forEach(function(key) {
             fs.unlinkSync(tmpDir+fileList[key]);
         });
@@ -662,14 +718,13 @@ async function encryptAndZip(zipName,publicKey ,fileList)
     Object.keys(fileList).forEach(function(key) {
         //console.log(key, originalNames[key]);
         encryptBinary(privateKey, 'testtest',publicKey,key).then(function (result) {
-            console.log(key);
-            console.log(fileList[key]);
+
             fs.writeFileSync(tmpDir+fileList[key],result.stream);
             archive.file(tmpDir+fileList[key], {name: fileList[key]});
             counter -= 1;
             if(counter === 0)
             {
-                console.log("Finished counting");
+
                 archive.finalize();
             }
         })
@@ -680,8 +735,7 @@ async function encryptAndZip(zipName,publicKey ,fileList)
 async function unzipAndDecrypt(zipName,publicKey)
 {
     var decryptedDir = zipName;
-    console.log("decrypt zip is");
-    console.log(decryptedDir)
+
     writeLock.lock(function()
         {
             var privateKey = fs.readFileSync(keyPatch+keyNames[0]);
@@ -698,7 +752,7 @@ async function unzipAndDecrypt(zipName,publicKey)
             decryptedDir = path.join(inboxDir,decryptedDir+"/");
 
             fs.createReadStream(tmpDir + zipName).pipe(unzipper.Extract({ path: decryptedDir }).on('close', function (){
-                console.log("hey");
+
 
                 decryptBinary(privateKey,'testtest',publicKey,decryptedDir+".message.json", decryptedDir+"..message.json").then(function () {
 
@@ -714,7 +768,7 @@ async function unzipAndDecrypt(zipName,publicKey)
                                 counter -=1;
                                 if(counter ===0)
                                 {
-                                    console.log("I have to go clean up");
+
                                     var inbox = JSON.parse(fs.readFileSync(inboxDir+"inbox.json"));
                                     var newMail = {};
                                     //newMail.sender= sender;
@@ -725,9 +779,7 @@ async function unzipAndDecrypt(zipName,publicKey)
                                     var attachments = [];
                                     Object.keys(messageLog.attachments).forEach(function(key)
                                     {
-                                        console.log("Pushing attachment ");
-                                        console.log(key);
-                                        console.log(messageLog.attachments[key]);
+
                                         if(key !== ".text.txt")
                                             attachments.push(key);
                                         fs.unlinkSync(decryptedDir+messageLog.attachments[key]);
@@ -737,12 +789,11 @@ async function unzipAndDecrypt(zipName,publicKey)
                                     fs.writeFileSync(decryptedDir+".message.json",JSON.stringify(newMail));
                                     newMail.folder = path.basename(decryptedDir);
                                     inbox.push(newMail);
-                                    console.log("inbox: ");
-                                    console.log(inbox);
+
                                     //fs.unlinkSync(decryptedDir+".message.json");
 
                                     fs.writeFileSync(inboxDir+"inbox.json",JSON.stringify(inbox));
-                                    console.log("Finished unzipping");
+
                                     writeLock.unlock();
                                 }
                             });
@@ -884,7 +935,8 @@ async function sendEmail(data)
         var att = {};
         Object.keys(originalNames).forEach(function(key) {
             //console.log(key, originalNames[key]);
-            outboxMessage.attachments.push(path.basename(key));
+            if(path.basename(key) !== ".text.txt")
+                outboxMessage.attachments.push(path.basename(key));
             att[path.basename(key)] = originalNames[key];
         });
         console.log(outboxMessage);

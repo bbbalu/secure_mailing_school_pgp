@@ -6,9 +6,9 @@
 </table>
 <script>
 
-    ipcRenderer.send("adressBook",true);
-    ipcRenderer.on("adressBook",function (e,data) {
-        console.log("adressBook");
+    ipcRenderer.send("addressBook",true);
+    ipcRenderer.on("addressBook",function (e,data) {
+        console.log("addressBook");
         console.log(data);
         $("#contactTable tbody").empty();
         var contactLength = data.length;
@@ -30,6 +30,6 @@
     })
     $("#addContact").click(function (e) {
         e.preventDefault();
-        ipcRenderer.send("adressBook:addContact",true);
+        ipcRenderer.send("addressBook:addContact",true);
     })
 </script>

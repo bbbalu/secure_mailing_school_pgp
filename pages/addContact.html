@@ -29,10 +29,10 @@
     $("#addPkeyButton").click(function (e)
     {
        e.preventDefault();
-       ipcRenderer.send("adressBook:addPKey",true);
+       ipcRenderer.send("addressBook:addPKey",true);
     });
 
-    ipcRenderer.on("adressBook:pkeyAdded",function (e,data) {
+    ipcRenderer.on("addressBook:pkeyAdded",function (e,data) {
         console.log(data);
        $("#pkeyTextArea").text(data.path);
        $("#pkeyFingerprint").val(data.fingerprint);
@@ -57,7 +57,7 @@
         formData.pkey = $("#pkeyTextArea").text();
         delete formData.pkeyFingerprint;
         console.log(formData);
-        ipcRenderer.send("adressBook:contactAdded",formData);
+        ipcRenderer.send("addressBook:contactAdded",formData);
     });
 
  </script>
