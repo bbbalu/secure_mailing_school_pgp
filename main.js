@@ -462,6 +462,8 @@ async function encrypt(privkey,passphrase,pubkey, message) {
 	return encrypted;
 }
 
+// private key used for signing the encrypted data
+// public key of the recipient used to encrypt the data
 async function encryptBinary(privkey,passphrase,pubkey, sourcePath) {
 //async function encryptBinary(privkey,passphrase,pubkey, sourcePath) {
     //openpgp.readArmored(pubkey);
@@ -495,19 +497,25 @@ async function encryptBinary(privkey,passphrase,pubkey, sourcePath) {
 
 }
 
-async function decrypt(privkey,passphrase,message)
+// private key of recipient to decrypt the data
+// public key of the sender to verify signed data
+async function decrypt(privkey,passphrase,pubkey,message)
 {
     privKeyObj = (await openpgp.key.readArmored(privkey)).keys[0];
+
     await privKeyObj.decrypt(passphrase);
     var options = {
     	message: await openpgp.message.readArmored(message),
-		privateKeys: [privKeyObj]
+		privateKeys: [privKeyObj],
+        publicKeys: (await openpgp.key.readArmored(pubkey)).keys
 	}
     var decrypted = await openpgp.decrypt(options);
     var plaintext = await openpgp.stream.readToEnd(decrypted.data);
     return(plaintext);
 }
 
+// private key of recipient to decrypt the data
+// public key of the sender to verify signed data
 async function decryptBinary(privkey,passphrase,pubkey,sourceFile,destFile)
 {
 
@@ -814,7 +822,7 @@ async function unzipAndDecrypt(zipName,publicKey)
 
 async function uploadFile(filePath,token)
 {
-    var path = require("path");
+    //var path = require("path");
     var Agent = require('socks5-http-client/lib/Agent');
 
     var url = 'https://myfile.is/api/upload';
@@ -847,6 +855,26 @@ async function uploadFile(filePath,token)
         }
         console.log('Upload successful!  Server responded with:', body);
     })
+}
+
+async function downloadFile(fileURL,fileDestination)
+{
+    var Agent = require('socks5-http-client/lib/Agent');
+    const options = {
+        url: fileURL,
+        agentClass: Agent,
+        agentOptions: {
+            socksHost: 'localhost', // Defaults to 'localhost'.
+            socksPort: 9050 // Defaults to 1080.
+        }
+    }
+    request
+        .get(options)
+        .on('response', function(response) {
+            console.log(response.statusCode) // 200
+            console.log(response.headers['content-type']) // 'image/png'
+        })
+        .pipe(fs.createWriteStream(fileDestination));
 }
 
 ipcMain.on("compose:addAttachment",function(e,data)
@@ -1045,6 +1073,28 @@ ipcMain.on("decryptFile",function(e,data) {
 	}, function(err,res){
 	console.log(err || res.body);});
 }*/
+
+function getPublicKey(email)
+{
+    if(validateEmail(email) ===false)
+        return null;
+    if(! fs.existsSync(addressDir+"addressbook.json"))
+        return null;
+    try {
+        var addressBook = JSON.parse(fs.readFileSync(addressDir+"addressbook.json"));
+        var n = addressBook.length;
+        for(var i=0; i<n; i++)
+        {
+            if(addressBook[i].email === email)
+                return addressBook[i].key;
+        }
+        return null;
+    }
+    catch (e) {
+        return null;
+    }
+
+}
 
 const mailLink = 'eludemaillhqfkh5.onion';
 const imapPort = 143;
