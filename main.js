@@ -861,6 +861,8 @@ async function encryptAndZip(zipName,publicKey ,fileList)
         });
         fs.unlinkSync(tmpDir+".text.txt");
         writeLock.unlock();
+        console.log("Zip name: " + zipName);
+        uploadFile(tmpDir+zipName,"?token=0e6b616adaafb1f8");
         unzipAndDecrypt(path.basename( zipName),publicKey);
 
     })
@@ -968,7 +970,7 @@ async function unzipAndDecrypt(zipName,publicKey)
 async function uploadFile(filePath,token)
 {
     //var path = require("path");
-    var Agent = require('socks5-http-client/lib/Agent');
+    var Agent = require('socks5-https-client/lib/Agent');
 
     var url = 'https://myfile.is/api/upload';
     if ( typeof token !== 'undefined' && token )
@@ -985,11 +987,11 @@ async function uploadFile(filePath,token)
 
     const options = {
         url: url,
-        agentClass: Agent,
+        /*agentClass: Agent,
         agentOptions: {
             socksHost: 'localhost', // Defaults to 'localhost'.
             socksPort: 9050 // Defaults to 1080.
-        },
+        },*/
         formData: formData
     }
 
@@ -999,6 +1001,7 @@ async function uploadFile(filePath,token)
             return console.error('upload failed:', err);
         }
         console.log('Upload successful!  Server responded with:', body);
+        fs.writeFileSync(outboxDir+path.basename(filePath)+"-resp.txt",body);
     });
 }
 
