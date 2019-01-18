@@ -43,24 +43,14 @@
 	</div>
 
 
-	<div class="row white keyarea">
-		<div class="input-field col s12">
-			<textarea id="privkey" class="materialize-textarea" readonly style='overflow-y: scroll'></textarea>
-			<label for="textarea1" class="active">Private key</label>
-		</div>
-	</div>
+
 	<div class="row white keyarea">
 		<div class="input-field col s12">
 			<textarea id="pubkey" class="materialize-textarea" readonly style="overflow-y: scroll"></textarea>
 			<label for="textarea1" class="active">Public key</label>
 		</div>
 	</div>
-	<div class="row white keyarea">
-		<div class="input-field col s12">
-			<textarea id="revocationCertificate" class="materialize-textarea" readonly style="overflow-y: scroll"></textarea>
-			<label for="textarea1" class="active">Revocation signature for public key</label>
-		</div>
-	</div>
+
 
 	<script>
 		// Test key exists
@@ -92,9 +82,9 @@
 			$('#noKeyNotification').css('display', 'none');
 			$('#createKeypairs').prop('disabled', true);
 			
-			$('#privkey').val(data.privateKeyArmored);
+
 			$('#pubkey').val(data.publicKeyArmored);
-			$('#revocationCertificate').val(data.revocationCertificate);
+
 
 			disableNav = false;
 		});

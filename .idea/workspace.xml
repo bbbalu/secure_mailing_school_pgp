@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4a38f517-a5a3-4251-9170-5d992e6e12cd" name="Default Changelist" comment="">
+    <list default="true" id="4a38f517-a5a3-4251-9170-5d992e6e12cd" name="Default Changelist" comment="Fix bug Adding and changing contacts">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/adressbook/adressbook.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/adressbook/sheaxer@elude.in-pub_key" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/inbox/inbox.json" beforeDir="false" afterPath="$PROJECT_DIR$/inbox/inbox.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/outbox/outbox.json" beforeDir="false" afterPath="$PROJECT_DIR$/outbox/outbox.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/editContact.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/editContact.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/keygen.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/keygen.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tmp/.text.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tmp/a.txt" beforeDir="false" />
     </list>
@@ -42,7 +41,7 @@
           <entry key="LICENSE" value="1" />
           <entry key="css" value="3" />
           <entry key="gitignore" value="2" />
-          <entry key="html" value="39" />
+          <entry key="html" value="40" />
           <entry key="js" value="17" />
           <entry key="json" value="6" />
           <entry key="priv_key" value="1" />
@@ -53,7 +52,7 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CSS" value="3" />
-          <entry key="HTML" value="39" />
+          <entry key="HTML" value="40" />
           <entry key="JSON" value="6" />
           <entry key="JavaScript" value="17" />
           <entry key="PLAIN_TEXT" value="6" />
@@ -64,32 +63,20 @@
           <entry key="gitignore" value="18" />
           <entry key="html" value="7731" />
           <entry key="js" value="14229" />
-          <entry key="txt" value="613" />
+          <entry key="txt" value="621" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="HTML" value="7731" />
           <entry key="JavaScript" value="14229" />
-          <entry key="PLAIN_TEXT" value="631" />
+          <entry key="PLAIN_TEXT" value="639" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/inbox.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="1" selection-start-line="1" selection-end-line="88" selection-end-column="6" />
-              <folding>
-                <element signature="n#style#0;n#tbody#0;n#table#0;n#div#0;n#!!top" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pages/outboxMessage.html">
           <provider selected="true" editor-type-id="text-editor">
@@ -120,11 +107,20 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="561">
-              <caret line="432" column="64" selection-start-line="432" selection-start-column="64" selection-end-line="432" selection-end-column="64" />
+            <state relative-caret-position="272">
+              <caret line="478" column="13" lean-forward="true" selection-start-line="478" selection-start-column="13" selection-end-line="478" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/pages/keygen.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="517">
+              <caret line="86" column="12" selection-start-line="86" selection-start-column="12" selection-end-line="86" selection-end-column="12" />
             </state>
           </provider>
         </entry>
@@ -231,7 +227,6 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/outbox/outbox.json.js" />
-        <option value="$PROJECT_DIR$/pages/keygen.html" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/pages/inbox.html" />
         <option value="$PROJECT_DIR$/adressbook/adressbook.js" />
@@ -247,6 +242,7 @@
         <option value="$PROJECT_DIR$/pages/addContact.html" />
         <option value="$PROJECT_DIR$/pages/editContact.html" />
         <option value="$PROJECT_DIR$/main.js" />
+        <option value="$PROJECT_DIR$/pages/keygen.html" />
       </list>
     </option>
   </component>
@@ -382,7 +378,7 @@
       <workItem from="1547306507335" duration="1521000" />
       <workItem from="1547376317431" duration="43851000" />
       <workItem from="1547568049987" duration="41126000" />
-      <workItem from="1547795241325" duration="544000" />
+      <workItem from="1547795241325" duration="718000" />
     </task>
     <task id="LOCAL-00001" summary="Adding inbox">
       <created>1547273621188</created>
@@ -524,11 +520,18 @@
       <option name="project" value="LOCAL" />
       <updated>1547794198838</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="Fix bug Adding and changing contacts">
+      <created>1547795833064</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1547795833064</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="170847000" />
+    <option name="totallyTimeSpent" value="171021000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -581,7 +584,8 @@
     <MESSAGE value="Outbox added" />
     <MESSAGE value="Function to lookup key," />
     <MESSAGE value="Adding and changing contacts" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding and changing contacts" />
+    <MESSAGE value="Fix bug Adding and changing contacts" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix bug Adding and changing contacts" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/package-lock.json">
@@ -657,13 +661,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/extensions/materialize/js/materialize.js">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/keygen.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1360">
-          <caret line="80" column="13" selection-start-line="80" selection-start-column="13" selection-end-line="80" selection-end-column="13" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/inbox/inbox.json">
       <provider selected="true" editor-type-id="text-editor" />
@@ -770,8 +767,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="561">
-          <caret line="432" column="64" selection-start-line="432" selection-start-column="64" selection-end-line="432" selection-end-column="64" />
+        <state relative-caret-position="272">
+          <caret line="478" column="13" lean-forward="true" selection-start-line="478" selection-start-column="13" selection-end-line="478" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/keygen.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="517">
+          <caret line="86" column="12" selection-start-line="86" selection-start-column="12" selection-end-line="86" selection-end-column="12" />
         </state>
       </provider>
     </entry>
