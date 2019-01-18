@@ -1,7 +1,7 @@
 <button id="compose">Compose new email</button>
 <button id="addContact">Add new contact</button>
 <table id="contactTable">
-    <thead> <tr> <th>Name</th> <th>Email adress</th></tr></thead>
+    <thead> <tr> <th>Name</th> <th>Email adress</th><th></th></tr></thead>
     <tbody></tbody>
 </table>
 <script>
@@ -21,6 +21,20 @@
             td=$("<td>");
             td.text(data[i].email);
             tr.append(td);
+            td= td=$("<td>");
+            var b = $("<button>");
+            b.text("Edit profile");
+            b.data("profile",data[i].email);
+            b.click(function(e)
+            {
+                e.preventDefault();
+                console.log("hey I try editiong");
+                ipcRenderer.send("addressBook:modifyAccount",$(this).data("profile"));
+            });
+            td.append(b);
+            tr.append(td);
+
+
             $("#contactTable tbody").append(tr);
         }
     });

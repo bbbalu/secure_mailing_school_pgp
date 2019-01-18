@@ -2,12 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4a38f517-a5a3-4251-9170-5d992e6e12cd" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/pages/editContact.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/adressbook/adressbook.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/adressbook/sheaxer@elude.in-pub_key" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/inbox/inbox.json" beforeDir="false" afterPath="$PROJECT_DIR$/inbox/inbox.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/outbox/outbox.json" beforeDir="false" afterPath="$PROJECT_DIR$/outbox/outbox.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/addContact.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/addContact.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/addressBook.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/addressBook.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tmp/.text.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tmp/a.txt" beforeDir="false" />
     </list>
@@ -40,7 +43,7 @@
           <entry key="LICENSE" value="1" />
           <entry key="css" value="3" />
           <entry key="gitignore" value="2" />
-          <entry key="html" value="38" />
+          <entry key="html" value="39" />
           <entry key="js" value="17" />
           <entry key="json" value="6" />
           <entry key="priv_key" value="1" />
@@ -51,7 +54,7 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CSS" value="3" />
-          <entry key="HTML" value="38" />
+          <entry key="HTML" value="39" />
           <entry key="JSON" value="6" />
           <entry key="JavaScript" value="17" />
           <entry key="PLAIN_TEXT" value="6" />
@@ -60,16 +63,16 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="gitignore" value="18" />
-          <entry key="html" value="6710" />
-          <entry key="js" value="12703" />
-          <entry key="txt" value="556" />
+          <entry key="html" value="7656" />
+          <entry key="js" value="14175" />
+          <entry key="txt" value="585" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="HTML" value="6710" />
-          <entry key="JavaScript" value="12703" />
-          <entry key="PLAIN_TEXT" value="574" />
+          <entry key="HTML" value="7656" />
+          <entry key="JavaScript" value="14175" />
+          <entry key="PLAIN_TEXT" value="603" />
         </counts>
       </usages-collector>
     </session>
@@ -112,17 +115,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pages/addressBook.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="14" column="45" selection-start-line="14" selection-start-column="45" selection-end-line="14" selection-end-column="45" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/extensions/scripts.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="384">
-              <caret line="70" column="32" selection-start-line="70" selection-start-column="32" selection-end-line="70" selection-end-column="32" />
+            <state relative-caret-position="299">
+              <caret line="22" column="26" lean-forward="true" selection-start-line="22" selection-start-column="26" selection-end-line="22" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -130,8 +124,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1845">
-              <caret line="1090" column="20" selection-start-line="1090" selection-start-column="20" selection-end-line="1090" selection-end-column="20" />
+            <state relative-caret-position="255">
+              <caret line="536" column="22" selection-start-line="536" selection-start-column="22" selection-end-line="536" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -139,8 +133,20 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pages/addContact.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="537">
-              <caret line="52" column="48" selection-start-line="52" selection-start-column="48" selection-end-line="52" selection-end-column="48" />
+            <state relative-caret-position="1360">
+              <caret line="80" column="7" selection-start-line="80" selection-start-column="7" selection-end-line="80" selection-end-column="7" />
+              <folding>
+                <element signature="n#style#0;n#textarea#0;n#div#2;n#form#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/editContact.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="687">
+              <caret line="84" column="53" selection-start-line="84" selection-start-column="25" selection-end-line="84" selection-end-column="53" />
               <folding>
                 <element signature="n#style#0;n#textarea#0;n#div#2;n#form#0;n#body#0;n#html#0;n#!!top" expanded="true" />
               </folding>
@@ -187,10 +193,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>encryptAndZip</find>
-      <find>unzipAndDecrypt</find>
-      <find>Date()</find>
-      <find>option</find>
       <find>contacts</find>
       <find>sendEmail</find>
       <find>account</find>
@@ -203,20 +205,24 @@
       <find>unzipandDec</find>
       <find>outbox.</find>
       <find>adressBook:addContact</find>
-      <find>createSubWindow</find>
-      <find>dialog</find>
       <find>adre</find>
       <find>adres</find>
       <find>addressBook</find>
       <find>addContact</find>
       <find>addressBook:contactAdded</find>
-      <find>adressBook</find>
-      <find>adress</find>
       <find>add</find>
       <find>console.log</find>
       <find>outbox</find>
       <find>seeMail</find>
       <find>email</find>
+      <find>addressbook.json</find>
+      <find>dialog</find>
+      <find>createSubWindow</find>
+      <find>readPublicKey</find>
+      <find>adressBook</find>
+      <find>addressBook:modifyAccount</find>
+      <find>addressBook:contactModified</find>
+      <find>adress</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -236,9 +242,11 @@
         <option value="$PROJECT_DIR$/pages/sent.html" />
         <option value="$PROJECT_DIR$/pages/adressBook.html" />
         <option value="$PROJECT_DIR$/main.html" />
-        <option value="$PROJECT_DIR$/pages/addContact.html" />
         <option value="$PROJECT_DIR$/pages/outbox.html" />
         <option value="$PROJECT_DIR$/pages/outboxMessage.html" />
+        <option value="$PROJECT_DIR$/pages/addressBook.html" />
+        <option value="$PROJECT_DIR$/pages/editContact.html" />
+        <option value="$PROJECT_DIR$/pages/addContact.html" />
         <option value="$PROJECT_DIR$/main.js" />
       </list>
     </option>
@@ -374,7 +382,7 @@
       <workItem from="1547175852660" duration="50176000" />
       <workItem from="1547306507335" duration="1521000" />
       <workItem from="1547376317431" duration="43851000" />
-      <workItem from="1547568049987" duration="26586000" />
+      <workItem from="1547568049987" duration="40577000" />
     </task>
     <task id="LOCAL-00001" summary="Adding inbox">
       <created>1547273621188</created>
@@ -502,11 +510,18 @@
       <option name="project" value="LOCAL" />
       <updated>1547658712990</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Function to lookup key,">
+      <created>1547707242680</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1547707242680</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="155763000" />
+    <option name="totallyTimeSpent" value="169754000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -557,7 +572,8 @@
     <MESSAGE value="Adding Contacts" />
     <MESSAGE value="Adding Contacts fix - importing public key" />
     <MESSAGE value="Outbox added" />
-    <option name="LAST_COMMIT_MESSAGE" value="Outbox added" />
+    <MESSAGE value="Function to lookup key," />
+    <option name="LAST_COMMIT_MESSAGE" value="Function to lookup key," />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/package-lock.json">
@@ -684,23 +700,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pages/addressBook.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="14" column="45" selection-start-line="14" selection-start-column="45" selection-end-line="14" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/addContact.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="537">
-          <caret line="52" column="48" selection-start-line="52" selection-start-column="48" selection-end-line="52" selection-end-column="48" />
-          <folding>
-            <element signature="n#style#0;n#textarea#0;n#div#2;n#form#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pages/sent.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
@@ -742,10 +741,37 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pages/addressBook.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="22" column="26" lean-forward="true" selection-start-line="22" selection-start-column="26" selection-end-line="22" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/addContact.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1360">
+          <caret line="80" column="7" selection-start-line="80" selection-start-column="7" selection-end-line="80" selection-end-column="7" />
+          <folding>
+            <element signature="n#style#0;n#textarea#0;n#div#2;n#form#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/editContact.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="687">
+          <caret line="84" column="53" selection-start-line="84" selection-start-column="25" selection-end-line="84" selection-end-column="53" />
+          <folding>
+            <element signature="n#style#0;n#textarea#0;n#div#2;n#form#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1845">
-          <caret line="1090" column="20" selection-start-line="1090" selection-start-column="20" selection-end-line="1090" selection-end-column="20" />
+        <state relative-caret-position="255">
+          <caret line="536" column="22" selection-start-line="536" selection-start-column="22" selection-end-line="536" selection-end-column="22" />
         </state>
       </provider>
     </entry>

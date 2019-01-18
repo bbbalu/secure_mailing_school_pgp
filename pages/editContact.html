@@ -15,27 +15,37 @@
     <script>if (window.module) module = window.module;</script>
 </head>
 <body>
-<form id="addContactForm">
+<form id="editContactForm">
     <div class="input-field"><label> Name</label> <br> <input type="text" name="name" > </div> <br>
-    <div class="input-field"><label> Email</label> <br> <input type="text" name="email" > </div> <br>
+    <div class="input-field"><label> Email</label> <br> <input type="text" name="email" readonly> </div> <br>
     <div class="input-field"><label> Public Key </label> <br> <textarea id="pkeyTextArea" cols="40" readonly style="min-height: 20px"> </textarea> </div> <br>
     <div class="input-field"><label> Key FingerPrint</label> <br> <input type="text" name="pkeyFingerprint" id="pkeyFingerprint" readonly> </div>
-    <button id="addPkeyButton">Add Public Key</button> <br>
-    <input type="submit" value="Add contact">
+    <button id="addPkeyButton">Change Public Key</button> <br>
+    <input type="submit" value="Modify contact">
 </form>
- <script>
-     const ipcRenderer = require('electron').ipcRenderer;
-     const dialog = require('electron').remote.dialog
-     $("#addPkeyButton").click(function (e)
+<script>
+    const ipcRenderer = require('electron').ipcRenderer;
+    const dialog = require('electron').remote.dialog;
+
+    ipcRenderer.on("addressBook:modifyAccount", function (e, data) {
+        console.log(data);
+        $('input[name="name"]').val(data.name);
+        $('input[name="email"]').val(data.email);
+        $("#pkeyTextArea").text(data.key);
+        $("#pkeyFingerprint").val(data.keyFingerprint);
+
+    });
+
+    $("#addPkeyButton").click(function (e)
     {
-       e.preventDefault();
-       ipcRenderer.send("addressBook:addPKey",true);
+        e.preventDefault();
+        ipcRenderer.send("addressBook:addPKey",true);
     });
 
     ipcRenderer.on("addressBook:pkeyAdded",function (e,data) {
         console.log(data);
-       $("#pkeyTextArea").text(data.path);
-       $("#pkeyFingerprint").val(data.fingerprint);
+        $("#pkeyTextArea").text(data.path);
+        $("#pkeyFingerprint").val(data.fingerprint);
     });
 
     ipcRenderer.on("addressBook:invalidPKey",function(e,data)
@@ -43,19 +53,19 @@
         dialog.showErrorBox("Invalid Key","The File you have tried importing is not a valid public key");
     });
 
-     ipcRenderer.on("addressBook:invalidEmail",function(e,data)
-     {
-         dialog.showErrorBox("Invalid Email","Emai you have entered is not in valid email form");
-     });
-
-     ipcRenderer.on("addressBook:noName",function(e,data)
-     {
-         dialog.showErrorBox("No name","Please fill out the name of the contact");
-     });
-
-    $("#addContactForm").submit(function (e)
+    ipcRenderer.on("addressBook:invalidEmail",function(e,data)
     {
-       e.preventDefault();
+        dialog.showErrorBox("Invalid Email","Emai you have entered is not in valid email form");
+    });
+
+    ipcRenderer.on("addressBook:noName",function(e,data)
+    {
+        dialog.showErrorBox("No name","Please fill out the name of the contact");
+    });
+
+    $("#editContactForm").submit(function (e)
+    {
+        e.preventDefault();
         var formData = $(this).serializeArray();
         var o = {};
         $.each(formData, function() {
@@ -72,14 +82,9 @@
         formData.pkey = $("#pkeyTextArea").text();
         delete formData.pkeyFingerprint;
         console.log(formData);
-        ipcRenderer.send("addressBook:contactAdded",formData);
+        ipcRenderer.send("addressBook:contactModified",formData);
     });
 
-    ipcRenderer.on("addressBook:contactExists",function (e, data)
-    {
-        dialog.showErrorBox("Contact exists", "The email adress already exists in your addressbook");
-    });
-
- </script>
+</script>
 </body>
 </html>
