@@ -51,6 +51,13 @@
 		</div>
 	</div>
 
+	<div class="row white keyarea">
+		<div class="input-field col s12">
+			<textarea id="fingerprint" class="materialize-textarea" readonly style="overflow-y: scroll"></textarea>
+			<label for="textarea1" class="active">Public key fingerprint</label>
+		</div>
+	</div>
+
 
 	<script>
 		// Test key exists
@@ -84,7 +91,7 @@
 			
 
 			$('#pubkey').val(data.publicKeyArmored);
-
+			$('#fingerprint').val(data.fingerprint);
 
 			disableNav = false;
 		});

@@ -165,7 +165,8 @@ ipcMain.on('keygen:createKeypairs', function(e, data) {
 	    var pubkey = key.publicKeyArmored;   // '-----BEGIN PGP PUBLIC KEY BLOCK ... '
 	    var revocationCertificate = key.revocationCertificate; // '-----BEGIN PGP PUBLIC KEY BLOCK ...
 
-	    mainWindow.webContents.send('keygen:showKeys', key);
+
+
 
 
 
@@ -180,7 +181,13 @@ ipcMain.on('keygen:createKeypairs', function(e, data) {
 	    fs.writeFile(keyPatch+keyNames[2], revocationCertificate, function(err) {
 		    if(err) return console.log(err);
 		});
-
+        readPublicKey(keyPatch+keyNames[1]).then(function (res){
+            var d = {
+                publicKeyArmored : pubkey,
+                fingerprint : toHexString(res)
+            }
+            mainWindow.webContents.send('keygen:showKeys', d);
+        });
 
 
 	}, function(err) { console.log(err); });
@@ -194,13 +201,22 @@ ipcMain.on('keygen:showKeys', function(e, data) {
 
 
 
-    var key = {
+    /*var key = {
         privateKeyArmored: fs.readFileSync(keyPatch+keyNames[0]),
         publicKeyArmored: fs.readFileSync(keyPatch+keyNames[1]),
         revocationCertificate: fs.readFileSync(keyPatch+keyNames[2])
-    };
+    };*/
+    var key ={
+        publicKeyArmored: fs.readFileSync(keyPatch+keyNames[1]),
+
+    }
+    readPublicKey(keyPatch+keyNames[1]).then(function (res)
+    {
+       key.fingerprint = toHexString(res);
+       mainWindow.webContents.send('keygen:showKeys', key);
+    });
     
-	mainWindow.webContents.send('keygen:showKeys', key);
+
 });
 
 
@@ -217,8 +233,7 @@ ipcMain.on("inbox", function (e,data) {
         var inbox;
         try {
             var inbox = JSON.parse(fs.readFileSync(inboxDir + "inbox.json"));
-            console.log("Inbox is alive");
-            console.log(inbox);
+
             mainWindow.send('inbox', inbox);
         }
         catch (e) {
@@ -270,7 +285,7 @@ ipcMain.on("compose:getContacts", function(e, data)
     var existsBool = fs.existsSync(addressDir + "addressbook.json");
     if(existsBool === true)
     {
-        console.log("hey");
+
         try{
             var addressBook = JSON.parse(fs.readFileSync(addressDir + "addressbook.json"));
             console.log(addressBook)
@@ -296,7 +311,7 @@ ipcMain.on("addressBook", function (e,data) {
     var existsBool = fs.existsSync(addressDir + "addressbook.json");
     if(existsBool === true)
     {
-        console.log("hey");
+
         try{
             var addressBook = JSON.parse(fs.readFileSync(addressDir + "addressbook.json"));
             console.log(addressBook)
@@ -984,7 +999,7 @@ async function uploadFile(filePath,token)
             return console.error('upload failed:', err);
         }
         console.log('Upload successful!  Server responded with:', body);
-    })
+    });
 }
 
 async function downloadFile(fileURL,fileDestination)
