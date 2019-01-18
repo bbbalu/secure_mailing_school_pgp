@@ -430,7 +430,7 @@ ipcMain.on("addressBook:contactAdded",function (e, data)
                         {
                             keyName =  data.email + "-" + i +"pub_key";
                             i+=1;
-                            exitsBool = fs.existsSync(keyPatch+keyName)
+                            exitsBool = fs.existsSync(addressDir+keyName)
                         }
                         fs.copyFileSync(data.pkey,addressDir+keyName);
 
@@ -513,7 +513,8 @@ ipcMain.on("addressBook:modifyAccount",function (e,data) {
 ipcMain.on("addressBook:contactModified",function (e,data) {
     var isEmail = validateEmail(data.email);
     if (isEmail) {
-        if (data.name !== "") {
+        if (data.name !== "")
+        {
             var addressBook = [];
             if (fs.existsSync(addressDir + "addressbook.json"))
                 addressBook = JSON.parse(fs.readFileSync(addressDir + "addressbook.json"));
@@ -524,23 +525,29 @@ ipcMain.on("addressBook:contactModified",function (e,data) {
                         subWindow.webContents.send("addressBook:invalidPKey", true);
                         return;
                     }
-                    var keyName = data.email + "-pub_key";
-                    var exitsBool = fs.existsSync(addressDir + keyName);
-                    var i = 0;
-                    while (exitsBool === true) {
-                        keyName = data.email + "-" + i + "pub_key";
-                        i += 1;
-                        exitsBool = fs.existsSync(keyPatch + keyName)
-                    }
-                    fs.copyFileSync(data.pkey, addressDir + keyName);
+                    if(modified) {
+                        var keyName = data.email + "-pub_key";
+                        var exitsBool = fs.existsSync(addressDir + keyName);
+                        var i = 0;
+                        while (exitsBool === true) {
+                            keyName = data.email + "-" + i + "pub_key";
+                            i += 1;
+                            exitsBool = fs.existsSync(addressDir + keyName)
+                        }
+                        try {
+                            fs.copyFileSync(data.pkey, addressDir + keyName);
+                        }
+                        catch (e) {
 
+                        }
+                    }
                     //i;
                     for (i = 0; i < addressBook.length; i++) {
                         if (addressBook[i].email === data.email) {
 
                             addressBook[i].name = data.name;
                             addressBook[i].key = keyName;
-                            fs.writeFileSync(JSON.stringify(addressDir + "addressbook.json"));
+                            fs.writeFileSync(addressDir + "addressbook.json",JSON.stringify(addressBook));
                             return;
                         }
                     }
@@ -554,11 +561,15 @@ ipcMain.on("addressBook:contactModified",function (e,data) {
             }
 
         }
-        subWindow.webContents.send("addressBook:noName", true);
-        console.log("name is empty");
-        return;
+        else {
+            subWindow.webContents.send("addressBook:noName", true);
+            console.log("name is empty");
+            return;
+        }
     }
-    subWindow.webContents.send("addressBook:invalidEmail", true);
+    else {
+        subWindow.webContents.send("addressBook:invalidEmail", true);
+    }
 });
 
 

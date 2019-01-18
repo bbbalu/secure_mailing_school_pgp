@@ -27,11 +27,14 @@
     const ipcRenderer = require('electron').ipcRenderer;
     const dialog = require('electron').remote.dialog;
 
+
+
     ipcRenderer.on("addressBook:modifyAccount", function (e, data) {
         console.log(data);
         $('input[name="name"]').val(data.name);
         $('input[name="email"]').val(data.email);
         $("#pkeyTextArea").text(data.key);
+        $("#editContactForm").data("modified",false);
         $("#pkeyFingerprint").val(data.keyFingerprint);
 
     });
@@ -80,6 +83,7 @@
         });
         formData = o;
         formData.pkey = $("#pkeyTextArea").text();
+        formData.modified = $(this).data("modified");
         delete formData.pkeyFingerprint;
         console.log(formData);
         ipcRenderer.send("addressBook:contactModified",formData);
