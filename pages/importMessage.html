@@ -1,0 +1,14 @@
+<div class="white basic_padding">
+    <input type="text" id="senderInput">
+    <textarea cols="50", style="min-height: 120px" id="messageArea"></textarea>
+</div>
+<button id="messageButton">Decrypt and download</button>
+
+<script>
+    $("#messageButton").click(function (e)
+    {
+        e.preventDefault();
+        console.log($("#messageArea").val());
+        ipcRenderer.send("message:received", {message: $("#messageArea").val(), sender: $("#senderInput").val()});
+    })
+</script>

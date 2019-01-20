@@ -764,6 +764,41 @@ async function encryptBinary(privkey,passphrase,pubkey, sourcePath) {
 
 }
 
+ipcMain.on("message:received",function(e,data)
+{
+    var addressBook = [];
+    if(fs.existsSync(addressDir+"addressbook.json"))
+    {
+        try {
+            addressBook = JSON.parse(fs.readFileSync(addressDir + "addressbook.json"));
+        }
+        catch (e) {
+            addressBook = [];
+        }
+    }
+    var publicKey = null;
+    for(var i=0;i<addressBook.length;i++)
+    {
+        if(addressBook[i].email === data.sender)
+            publicKey = addressDir + addressBook[i].key;
+    }
+    if(publicKey !== null)
+        publicKey = fs.readFileSync(publicKey);
+    decrypt(fs.readFileSync(keyPatch+keyNames[0]),'testtest',publicKey,data.message).then(function(decryptedUrl)
+    {
+        console.log(decryptedUrl);
+        var zipName = randomstring.generate({
+            charset: 'alphanumeric'
+        })
+        downloadFile(decryptedUrl,tmpDir+zipName).then(function ()
+        {
+            unzipAndDecrypt(zipName,publicKey);
+        })
+        // todo
+    });
+    
+})
+
 // private key of recipient to decrypt the data
 // public key of the sender to verify signed data
 async function decrypt(privkey,passphrase,pubkey,message)
@@ -771,11 +806,22 @@ async function decrypt(privkey,passphrase,pubkey,message)
     privKeyObj = (await openpgp.key.readArmored(privkey)).keys[0];
 
     await privKeyObj.decrypt(passphrase);
-    var options = {
-    	message: await openpgp.message.readArmored(message),
-		privateKeys: [privKeyObj],
-        publicKeys: (await openpgp.key.readArmored(pubkey)).keys
-	}
+    var options;
+    if(pubkey == null) {
+        options = {
+            message: await openpgp.message.readArmored(message),
+            privateKeys: [privKeyObj]
+            //publicKeys: (await openpgp.key.readArmored(pubkey)).keys
+        }
+    }
+    else
+    {
+        options = {
+            message: await openpgp.message.readArmored(message),
+            privateKeys: [privKeyObj],
+            publicKeys: (await openpgp.key.readArmored(pubkey)).keys
+        }
+    }
     var decrypted = await openpgp.decrypt(options);
     var plaintext = await openpgp.stream.readToEnd(decrypted.data);
     return(plaintext);
@@ -792,12 +838,24 @@ async function decryptBinary(privkey,passphrase,pubkey,sourceFile,destFile)
     const file = fs.readFileSync(sourceFile);
 
     const fileForOpenpgpjs = new Uint8Array(file);
-
-    var options = {
-        message: await openpgp.message.read(fileForOpenpgpjs),
-        format: 'binary',
-        publicKeys: publicKeys,
-        privateKeys: [privKeyObj]
+    var options;
+    if(pubkey == null)
+    {
+        options = {
+            message: await openpgp.message.read(fileForOpenpgpjs),
+            format: 'binary',
+           //publicKeys: publicKeys,
+            privateKeys: [privKeyObj]
+        }
+    }
+    else
+    {
+        options = {
+            message: await openpgp.message.read(fileForOpenpgpjs),
+            format: 'binary',
+            publicKeys: publicKeys,
+            privateKeys: [privKeyObj]
+        }
     }
 
     const decryptionResponse = await openpgp.decrypt(options);
@@ -1021,7 +1079,7 @@ async function encryptAndZip(zipName,publicKey ,fileList,recipient)
 
         /// get token somehow
 
-        //
+        //todo remove token
         uploadFile(tmpDir+zipName,"?token=0e6b616adaafb1f8",publicKey,recipient);
 
         // node mailer, + encreypt the
@@ -1150,11 +1208,11 @@ async function uploadFile(filePath,token,publicKey,recipient)
 
     const options = {
         url: url,
-        /*agentClass: Agent,
+        agentClass: Agent,
         agentOptions: {
             socksHost: 'localhost', // Defaults to 'localhost'.
             socksPort: 9050 // Defaults to 1080.
-        },*/
+        },
         formData: formData
     }
 
