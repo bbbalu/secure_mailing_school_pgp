@@ -160,7 +160,7 @@ ipcMain.on('accountExists', function(e, data)
                 //connect_Imap(acc.userName,acc.password,acc.imapUrl,acc.imapPort);
 
                mainWindow.webContents.send('accountExists',true);
-               conImap(acc.userName,acc.password,acc.imapUrl,acc.imapPort);
+               //conImap(acc.userName,acc.password,acc.imapUrl,acc.imapPort);
            }
        }catch (e) {
            mainWindow.webContents.send('accountExists',false);
@@ -191,7 +191,39 @@ async function conImap(userName,password,url,port)
 
 ipcMain.on("account:isCreated", function (e, data)
 {
-  // var exi
+    var existsBool = fs.existsSync(profileDir+"profile.json");
+    if(existsBool === true)
+    {
+        var acc = fs.readFileSync(profileDir+"profile.json");
+        try{
+                acc = JSON.parse(acc);
+                console.log(acc);
+                if((acc.smtpUrl == undefined)|| (acc.smtpUrl == ""))
+                    acc.smtpUrl = mailLink;
+                if((acc.smtpPort == undefined)|| (acc.smtpPort == ""))
+                    data.smtpPort = smtpPort;
+                if((acc.imapUrl == undefined)|| (acc.imapUrl == ""))
+                    data.imapUrl = mailLink;
+                if((acc.imapPort == undefined)|| (acc.imapPort == "")) {
+                    acc.imapPort = imapPort;
+                }
+
+                console.log("Link is " + mailLink);
+                //acc.imapUrl = mailLink;
+                //console.log(acc.password);
+                //console.log("Connecting to : " + acc.userName +" " +acc.password + " " + acc.imapUrl +" " + acc.imapPort);
+                //connect_Imap(acc.userName,acc.password,acc.imapUrl,acc.imapPort);
+
+                mainWindow.webContents.send("account:isCreated",acc);
+                //conImap(acc.userName,acc.password,acc.imapUrl,acc.imapPort);
+
+        }catch (e) {
+            mainWindow.webContents.send('account:isCreated',null);
+        }
+
+    }
+    else
+        mainWindow.webContents.send('account:isCreated',null);
 });
 
 ipcMain.on('accountCreated', function (e,data) {
@@ -252,6 +284,20 @@ ipcMain.on('keygen:createKeypairs', function(e, data) {
 
 	}, function(err) { console.log(err); });
 
+});
+
+ipcMain.on("keygen:exportPubKey",function(e,data)
+{
+    var options = {
+        title : "Export public key",
+        message : "Select file name for your public key"
+    }
+    dialog.showSaveDialog(null,options,(filePaths) =>
+    {
+       if(filePaths == undefined)
+           return;
+       fs.copyFileSync(keyPatch+keyNames[1],filePaths);
+    });
 });
 
 // Show keys

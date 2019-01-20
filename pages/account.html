@@ -6,6 +6,7 @@
             You don't have an email account. We advise you to create one for Elude Mail. Please visit
             <a id="accountCreateLink" href="http://eludemaillhqfkh5.onion/"> http://eludemaillhqfkh5.onion/</a> and create an account
         </div>
+    </div>
         <form id="accountForm">
             <label>Username</label> <input type="text" name="nick" placeholder="username@elude.in"> <br>
             <label>Password</label> <input type="password" name="password">
@@ -22,7 +23,7 @@
             <input type="submit" value="Save account">
         </form>
     </div>
-</div>
+
 <script>
     ipcRenderer.send("account:isCreated",true);
 
@@ -30,6 +31,7 @@
     {
         if((data !== undefined) && (data !== null))
         {
+            $("#noAccountNotification").hide();
             $('#accountForm input[name="nick"]').val(data.userName);
             $('#accountForm input[name="password"]').val(data.password);
             $('#accountForm input[name="smtpUrl"]').val(data.smtpUrl);
