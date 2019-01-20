@@ -3,17 +3,42 @@
     <div class="notification_box" id="noAccountNotification">
         <h3>No account</h3>
         <div>
-            You don't have an account on EludeMail. Please visit
+            You don't have an email account. We advise you to create one for Elude Mail. Please visit
             <a id="accountCreateLink" href="http://eludemaillhqfkh5.onion/"> http://eludemaillhqfkh5.onion/</a> and create an account
         </div>
         <form id="accountForm">
             <label>Username</label> <input type="text" name="nick" placeholder="username@elude.in"> <br>
             <label>Password</label> <input type="password" name="password">
+            <br> <br>
+            <fieldset>
+                <legend>Optional</legend>
+                <p>
+                    <label>SMTP URL</label> <input type="text" name="smtpUrl">
+                    <label> SMTP port</label> <input type="text" name="smtpPort"> <br>
+                    <label>IMAP url</label> <input type="text" name="imapUrl">
+                    <label>IMAP port</label> <input type="text" name="imapPort">
+                </p>
+            </fieldset>
             <input type="submit" value="Save account">
         </form>
     </div>
 </div>
 <script>
+    ipcRenderer.send("account:isCreated",true);
+
+    ipcRenderer.on("account:isCreated",function(e,data)
+    {
+        if((data !== undefined) && (data !== null))
+        {
+            $('#accountForm input[name="nick"]').val(data.userName);
+            $('#accountForm input[name="password"]').val(data.password);
+            $('#accountForm input[name="smtpUrl"]').val(data.smtpUrl);
+            $('#accountForm input[name="smtpPort"]').val(data.smtpPort);
+            $('#accountForm input[name="imapUrl"]').val(data.imapUrl);
+            $('#accountForm input[name="imapPort"]').val(data.imapPort);
+        }
+    });
+
     $("#accountCreateLink").click(function (e) {
         e.preventDefault();
         var sys = require('util');
@@ -31,13 +56,21 @@
         e.preventDefault();
         var userName = $('#accountForm input[name="nick"]').val();
         var password = $('#accountForm input[name="password"]').val();
+        var smtpUrl = $('#accountForm input[name="smtpUrl"]').val();
+        var smtpPort = $('#accountForm input[name="smtpPort"]').val();
+        var imapUrl = $('#accountForm input[name="imapUrl"]').val();
+        var imapPort = $('#accountForm input[name="imapPort"]').val();
         console.log("username is " + userName);
         console.log("password is " + password);
         var res = {
             userName : userName,
-            password : password
+            password : password,
+            smtpUrl: smtpUrl,
+            smtpPort: smtpPort,
+            imapUrl: imapUrl,
+            imapPort: imapPort
         }
         ipcRenderer.send("accountCreated", res);
         ipcRenderer.send('keygen:keyExists', true);
-    })
+    });
 </script>

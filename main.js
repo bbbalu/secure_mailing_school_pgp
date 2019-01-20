@@ -1,3 +1,4 @@
+var ImapClient = require('emailjs-imap-client');
 const electron = require('electron');
 const url = require('url');
 const path = require('path');
@@ -19,8 +20,13 @@ const keyNames = ['priv_key', 'pub_key', 'revocation',];
 const archiver = require('archiver');
 const unzipper = require('unzipper');
 const locks = require('locks');
-
+const nodemailer = require('nodemailer');
 const randomstring = require("randomstring");
+
+const mailLink = 'eludemaillhqfkh5.onion';
+const imapPort = 143;
+const smtpPort = 25;
+let imap;
 
 const socksConfig = {
     proxyHost: 'localhost',
@@ -132,10 +138,30 @@ ipcMain.on('accountExists', function(e, data)
            acc=JSON.parse(fs.readFileSync(profileDir+"profile.json"));
            if(acc === undefined)
                mainWindow.webContents.send('accountExists',false);
-           if((acc.userName === undefined) || (acc.userName ===''))
+           else if((acc.userName === undefined) || (acc.userName ===''))
                mainWindow.webContents.send('accountExists',false);
-           if((acc.password === undefined) || (acc.password === ''))
+           else if((acc.password === undefined) || (acc.password === ''))
                mainWindow.webContents.send('accountExists',false);
+           else
+           {
+               console.log(acc);
+               if((acc.smtpUrl == undefined)|| (acc.smtpUrl == ""))
+                   acc.smtpUrl = mailLink;
+               if((acc.smtpPort == undefined)|| (acc.smtpPort == ""))
+                   data.smtpPort = smtpPort;
+               if((acc.imapUrl == undefined)|| (acc.imapUrl == ""))
+                   data.imapUrl = mailLink;
+               if((acc.imapPort == undefined)|| (acc.imapPort == ""))
+                   acc.imapPort = imapPort;
+               console.log("Link is " + mailLink);
+               acc.imapUrl = mailLink;
+               console.log(acc.password);
+               console.log("Connecting to : " + acc.userName +" " +acc.password + " " + acc.imapUrl +" " + acc.imapPort);
+                //connect_Imap(acc.userName,acc.password,acc.imapUrl,acc.imapPort);
+
+               mainWindow.webContents.send('accountExists',true);
+               conImap(acc.userName,acc.password,acc.imapUrl,acc.imapPort);
+           }
        }catch (e) {
            mainWindow.webContents.send('accountExists',false);
        }
@@ -145,8 +171,42 @@ ipcMain.on('accountExists', function(e, data)
        mainWindow.webContents.send('accountExists',existsBool);
 });
 
+async function conImap(userName,password,url,port)
+{
+    console.log("IMMA HERE");
+    var client = new ImapClient.default(url, port, {
+        auth: {
+            user: userName,
+            pass: password
+        }
+    });
+
+    client.connect().then(() => {
+        console.log("Connected");
+        client.listMailboxes().then((mailboxes) => {
+            console.log(mailboxes);
+        });
+    });
+}
+
+ipcMain.on("account:isCreated", function (e, data)
+{
+  // var exi
+});
+
 ipcMain.on('accountCreated', function (e,data) {
-   fs.writeFileSync(profileDir+"profile.json",JSON.stringify(data));
+
+    // check
+    if((data.smtpUrl == undefined)|| (data.smtpUrl == ""))
+        data.smtpUrl = mailLink;
+    if((data.smtpPort == undefined)|| (data.smtpPort == ""))
+        data.smtpPort = smtpPort;
+    if((data.imapUrl == undefined)|| (data.imapUrl == ""))
+        data.imapUrl = mailLink;
+    if((data.imapPort == undefined)|| (data.imapPort == ""))
+        data.imapPort = imapPort;
+
+    fs.writeFileSync(profileDir+"profile.json",JSON.stringify(data));
    //mainWindow.loadURL(urlSOS('main.html'))
 });
 
@@ -843,6 +903,40 @@ async function zipFiles()
     //var output = fs.createWriteStream('./example.zip')
 }
 
+function smtp (url,port,userName,password,recipient,message)
+{
+    let transporter = nodemailer.createTransport({
+        host: url,
+        port: port,
+        secure: true,
+        proxy: 'socks5://localhost:9050',
+        auth :
+            {
+                user: userName,
+                password: password
+            }
+    });
+// enable support for socks URLs
+    transporter.set('proxy_socks_module', require('socks'));
+
+    var message = {
+        from: userName,
+        to: recipient,
+        subject: randomstring.generate({
+            charset: 'alphanumeric'
+        }),
+        text: message
+    };
+
+    transporter.sendMail(message,function(err,info,response)
+    {
+        if(err)
+        {
+            console.log(err);
+        }
+    })
+}
+
 async function encryptAndZip(zipName,publicKey ,fileList)
 {
     var privateKey = fs.readFileSync(keyPatch+keyNames[0]);
@@ -862,7 +956,26 @@ async function encryptAndZip(zipName,publicKey ,fileList)
         fs.unlinkSync(tmpDir+".text.txt");
         writeLock.unlock();
         console.log("Zip name: " + zipName);
-        uploadFile(tmpDir+zipName,"?token=0e6b616adaafb1f8");
+
+        /// get token somehow
+
+        //
+        uploadFile(tmpDir+zipName,"?token=0e6b616adaafb1f8").then(function (url)
+        {
+            if((url !== undefined) && (url !== null))
+            {
+                // nodemailer create transport,
+                encrypt(fs.readFileSync(keyPatch+keyNames[0]),'testtest',publicKey,url).then(function(encryptedUrl)
+                {
+                    // send emdial through nodemailer
+                    //smtp();
+                   console.log(encryptedUrl);
+                });
+            }
+        });
+
+        // node mailer, + encreypt the
+
         unzipAndDecrypt(path.basename( zipName),publicKey);
 
     })
@@ -1001,7 +1114,13 @@ async function uploadFile(filePath,token)
             return console.error('upload failed:', err);
         }
         console.log('Upload successful!  Server responded with:', body);
+        var resp = JSON.parse(body);
+
         fs.writeFileSync(outboxDir+path.basename(filePath)+"-resp.txt",body);
+        if(resp.status === true)
+        {
+            return(resp.data.file.url.short);
+        }
     });
 }
 
@@ -1164,7 +1283,20 @@ async function sendEmail(data)
         fs.writeFileSync(path.join(outboxDir,zipName+"/")+".message.json",JSON.stringify(outboxMessage));
         fs.writeFileSync(tmpDir+".message.json",JSON.stringify(messageLog));
         originalNames[tmpDir+".message.json"]=".message.json";
-        var publicKey= fs.readFileSync(keyPatch+keyNames[1]);
+        // replace with find public key from address book
+        var addressBook = JSON.parse(fs.readFileSync(addressDir+"addressbook.json"));
+        var publicKey;
+        /*for (var i=0; i< addressBook.length; i++)
+        {
+            if(addressBook[i].email === data.recipient)
+            {
+                publicKey = fs.readFileSync(addressDir+addressBook[i].key);
+                break;
+            }
+
+        }*/
+        publicKey= fs.readFileSync(keyPatch+keyNames[1]);
+
         if(!fs.existsSync(outboxDir+"outbox.json"))
             fs.writeFileSync(outboxDir+"outbox.json",JSON.stringify([]));
         var outbox;
@@ -1244,10 +1376,7 @@ function getPublicKey(email)
 
 }
 
-const mailLink = 'eludemaillhqfkh5.onion';
-const imapPort = 143;
-const smtpPort = 25;
-let imap;
+
 function connect_Imap(user,password, host, port)
 {
     var Imap = require('imap-socks5');
@@ -1262,8 +1391,27 @@ function connect_Imap(user,password, host, port)
 
     imap.on("ready",function()
     {
+        imap.openBox('INBOX',true,function (err,box)
+        {
+            if(err)
+            {
+                console.log(err);
+                throw(err);
+                return;
+            }
 
+        })
     });
+
+    imap.once('error', function(err) {
+        console.log(err);
+    });
+
+    imap.once('end', function() {
+        console.log('Connection ended');
+    });
+
+    imap.connect();
 }
 
 // ********** Main menu structure ********** //

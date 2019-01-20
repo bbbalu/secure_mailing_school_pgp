@@ -82,7 +82,7 @@
         });
         formData = o;
         formData.text = text;
-        //console.log(formData);
+        console.log(formData);
         ipcRenderer.send("compose:send", formData);
     })
     $("#addContact").click(function (e) {
