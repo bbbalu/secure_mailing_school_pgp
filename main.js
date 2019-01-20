@@ -1006,25 +1006,13 @@ async function encryptAndZip(zipName,publicKey ,fileList)
         /// get token somehow
 
         //
-        uploadFile(tmpDir+zipName,"?token=0e6b616adaafb1f8").then(function (url)
-        {
-            if((url !== undefined) && (url !== null))
-            {
-                // nodemailer create transport,
-                encrypt(fs.readFileSync(keyPatch+keyNames[0]),'testtest',publicKey,url).then(function(encryptedUrl)
-                {
-                    // send emdial through nodemailer
-                    //smtp();
-                   console.log(encryptedUrl);
-                });
-            }
-        });
+        uploadFile(tmpDir+zipName,"?token=0e6b616adaafb1f8",publicKey);
 
         // node mailer, + encreypt the
 
-        unzipAndDecrypt(path.basename( zipName),publicKey);
+        //unzipAndDecrypt(path.basename( zipName),publicKey);
 
-    })
+    });
     var output = fs.createWriteStream(tmpDir+zipName);
     archive.pipe(output);
     var attLength = Object.keys(fileList).length;
@@ -1126,7 +1114,7 @@ async function unzipAndDecrypt(zipName,publicKey)
     );
 }
 
-async function uploadFile(filePath,token)
+async function uploadFile(filePath,token,publicKey)
 {
     //var path = require("path");
     var Agent = require('socks5-https-client/lib/Agent');
@@ -1165,7 +1153,27 @@ async function uploadFile(filePath,token)
         fs.writeFileSync(outboxDir+path.basename(filePath)+"-resp.txt",body);
         if(resp.status === true)
         {
-            return(resp.data.file.url.short);
+            console.log("we are here");
+            console.log(resp.data.file.url.short);
+            var url = resp.data.file.url.short;
+                if((url !== undefined) && (url !== null))
+                {
+                    // nodemailer create transport,
+                    encrypt(fs.readFileSync(keyPatch+keyNames[0]),'testtest',publicKey,url).then(function(encryptedUrl)
+                    {
+                        // send emdial through nodemailer
+                        //smtp();
+                        
+                        console.log(encryptedUrl);
+                    });
+                }
+                else
+                {
+                    console.log("error");
+                    console.log(encryptedUrl);
+                }
+
+            //return(resp.data.file.url.short);
         }
     });
 }
