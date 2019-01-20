@@ -31,7 +31,7 @@
 			</button>
 		</div>
 		<div class="col s4">
-			<button class="btn waves-effect waves-light" type="submit" name="action" id="revokePublicKey">Revoke public key
+			<button class="btn waves-effect waves-light" type="submit" name="action" id="exportPublicKey">Export public key
 				<i class="material-icons right">block</i>
 			</button>
 		</div>
@@ -95,6 +95,12 @@
 
 			disableNav = false;
 		});
+
+        $("#exportPublicKey").click(function (e) {
+			e.preventDefault();
+			console.log("Clicked");
+			ipcRenderer.send("keygen:exportPubKey",true);
+        })
 
 		$("#regenerateKeypairsBegin").click(function(e) {
 			$('#regenerateKeypairsNotification').slideDown();
