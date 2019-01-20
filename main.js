@@ -646,32 +646,48 @@ ipcMain.on("addressBook:contactModified",function (e,data) {
                         subWindow.webContents.send("addressBook:invalidPKey", true);
                         return;
                     }
-                    if(modified) {
-                        var keyName = data.email + "-pub_key";
-                        var exitsBool = fs.existsSync(addressDir + keyName);
-                        var i = 0;
-                        while (exitsBool === true) {
-                            keyName = data.email + "-" + i + "pub_key";
-                            i += 1;
-                            exitsBool = fs.existsSync(addressDir + keyName)
-                        }
-                        try {
-                            fs.copyFileSync(data.pkey, addressDir + keyName);
-                        }
-                        catch (e) {
-
-                        }
-                    }
-                    //i;
-                    for (i = 0; i < addressBook.length; i++) {
+                    var modified;
+                    for (var i = 0; i < addressBook.length; i++) {
                         if (addressBook[i].email === data.email) {
+                            console.log("the last place");
+                            console.log(addressBook[i]);
+                            var origBuff = fs.readFileSync(addressDir+addressBook[i].key);
+                            var newBuff = fs.readFileSync(data.pkey);
+                            modified = !origBuff.equals(newBuff);
+
+                            if(modified) {
+                                //console.log("what is even goiudn on " + addressBook[i]);
+                                var keyName = data.email + "-pub_key";
+                                var exitsBool = fs.existsSync(addressDir + keyName);
+                                var j = 0;
+                                while (exitsBool === true) {
+                                    keyName = data.email + "-" + j + "pub_key";
+                                    j += 1;
+                                    exitsBool = fs.existsSync(addressDir + keyName)
+                                }
+
+                                addressBook[i].key = keyName;
+                                try {
+                                    fs.copyFileSync(data.pkey, addressDir + keyName);
+                                }
+                                catch (e) {
+
+                                }
+                            }
+                            else
+                            {
+                                console.log("key was not modified");
+                            }
 
                             addressBook[i].name = data.name;
-                            addressBook[i].key = keyName;
+
                             fs.writeFileSync(addressDir + "addressbook.json",JSON.stringify(addressBook));
                             return;
                         }
                     }
+
+                    //i;
+
 
 
                 });
@@ -983,7 +999,7 @@ function smtp (url,port,userName,password,recipient,message)
     })
 }
 
-async function encryptAndZip(zipName,publicKey ,fileList)
+async function encryptAndZip(zipName,publicKey ,fileList,recipient)
 {
     var privateKey = fs.readFileSync(keyPatch+keyNames[0]);
     var archive = archiver('zip', {
@@ -1006,7 +1022,7 @@ async function encryptAndZip(zipName,publicKey ,fileList)
         /// get token somehow
 
         //
-        uploadFile(tmpDir+zipName,"?token=0e6b616adaafb1f8",publicKey);
+        uploadFile(tmpDir+zipName,"?token=0e6b616adaafb1f8",publicKey,recipient);
 
         // node mailer, + encreypt the
 
@@ -1114,7 +1130,7 @@ async function unzipAndDecrypt(zipName,publicKey)
     );
 }
 
-async function uploadFile(filePath,token,publicKey)
+async function uploadFile(filePath,token,publicKey,recipient)
 {
     //var path = require("path");
     var Agent = require('socks5-https-client/lib/Agent');
@@ -1163,7 +1179,8 @@ async function uploadFile(filePath,token,publicKey)
                     {
                         // send emdial through nodemailer
                         //smtp();
-                        
+                        var acc= JSON.parse(fs.readFileSync(profileDir+"profile.json"));
+                        smtp(acc.smtpUrl,acc.smtpPort,acc.userName,acc.password,)
                         console.log(encryptedUrl);
                     });
                 }
@@ -1350,6 +1367,10 @@ async function sendEmail(data)
 
         }*/
         publicKey= fs.readFileSync(keyPatch+keyNames[1]);
+        // todo
+        //here I need to pick publick key from addressbook
+        //
+
 
         if(!fs.existsSync(outboxDir+"outbox.json"))
             fs.writeFileSync(outboxDir+"outbox.json",JSON.stringify([]));
@@ -1364,7 +1385,7 @@ async function sendEmail(data)
         fs.writeFileSync(outboxDir+"outbox.json",JSON.stringify(outbox));
         // encrpyt all files and zip them please
 
-        encryptAndZip(zipName,publicKey,originalNames);
+        encryptAndZip(zipName,publicKey,originalNames,data.recipient);
         //put here encryption have to redo zipFiles function
 
         //messageLog['.text.txt'] = randomStr;
