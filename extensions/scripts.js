@@ -66,6 +66,12 @@ $("nav a").click(function(e) {
 	// Main menu is disabled
 	if (disableNav) return;
 
+	// New mail
+	if ($(this).hasClass('compose')) {
+        ipcRenderer.send("compose",true);
+        return;
+	}
+
 	if ($(this).closest('.main_navigation').length > 0) {
 		$('.main_navigation').find('li').removeClass('active');
 		$(this).closest('li').addClass('active');

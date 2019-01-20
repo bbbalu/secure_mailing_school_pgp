@@ -19,7 +19,7 @@
 <form id="composeForm" class="white basic_padding">
     <label>Recipient</label> <br> <select name="recipient" id="recipientSelect" class="basic_padding white">
         </select> <br>
-    <button id="addContact">Add new contact</button> <br> <br>
+    <!--button id="addContact">Add new contact</button> <br> <br-->
     <div class="input-field"><label> Subject</label> <br> <input type="text" name="subject" > </div> <br>
 
 
@@ -87,6 +87,7 @@
     })
     $("#addContact").click(function (e) {
         e.preventDefault();
+        //ipcRenderer.send("addressBook:addContact",true);
     })
     new nicEditor({fullPanel : true, iconsPath : '../extensions/nicEdit/nicEditorIcons.gif'}).panelInstance('area1');
     $("#addAttachmentButton").click(function (e) {

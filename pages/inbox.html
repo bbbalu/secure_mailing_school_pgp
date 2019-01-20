@@ -1,11 +1,3 @@
-
-<button id="compose">Compose new email</button>
-<script>
-    $("#compose").click(function (e) {
-        e.preventDefault();
-        ipcRenderer.send("compose",true);
-    })
-</script>
 <div class="white basic_padding">
 	<table class="striped highlight" id="inboxTable">
 		<thead>
@@ -17,34 +9,34 @@
 		</thead>
 
 		<tbody style="overflow-y: scroll">
-		<!--<tr>
-            <td><strong>Alvin</strong></td>
-            <td>This is a test...</td>
-            <td>02.11.2018 14:31:03</td>
-        </tr>
-        <tr>
-            <td><strong>Alvin</strong></td>
-            <td>This is a test...</td>
-            <td>02.11.2018 14:31:03</td>
-        </tr>
-        <tr>
-            <td><strong>Alvin</strong></td>
-            <td>This is a test...</td>
-            <td>02.11.2018 14:31:03</td>
-        </tr>
-        <tr>
-            <td><strong>Alvin</strong></td>
-            <td>This is a test...</td>
-            <td>02.11.2018 14:31:03</td>
-        </tr>
-        <tr>
-            <td><strong>Alvin</strong></td>
-            <td>This is a test...</td>
-            <td>02.11.2018 14:31:03</td>
-        </tr> -->
-    </tbody>
-</table>
-	<script>
+    		<!--<tr>
+                <td><strong>Alvin</strong></td>
+                <td>This is a test...</td>
+                <td>02.11.2018 14:31:03</td>
+            </tr>
+            <tr>
+                <td><strong>Alvin</strong></td>
+                <td>This is a test...</td>
+                <td>02.11.2018 14:31:03</td>
+            </tr>
+            <tr>
+                <td><strong>Alvin</strong></td>
+                <td>This is a test...</td>
+                <td>02.11.2018 14:31:03</td>
+            </tr>
+            <tr>
+                <td><strong>Alvin</strong></td>
+                <td>This is a test...</td>
+                <td>02.11.2018 14:31:03</td>
+            </tr>
+            <tr>
+                <td><strong>Alvin</strong></td>
+                <td>This is a test...</td>
+                <td>02.11.2018 14:31:03</td>
+            </tr> -->
+        </tbody>
+    </table>
+    <script>
         ipcRenderer.send("inbox",true);
 
         ipcRenderer.on('inbox',function (e,data) {
@@ -73,17 +65,17 @@
                 td.text(inbox[i].date);
                 tr.append(td);
 
-				tr.click(function (e)
-				{
+                tr.click(function (e)
+                {
                     console.log("Clicked");
                     console.log($(this).data("folder"));
                     console.log($(this).data("attachments"));
                     ipcRenderer.send("inbox:seeMail",$(this).data());
-				});
+                });
                 tbody.append(tr);
             }
 
         });
 
-	</script>
+    </script>
 </div>
