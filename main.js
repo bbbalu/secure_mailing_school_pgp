@@ -262,17 +262,11 @@ ipcMain.on('keygen:createKeypairs', function(e, data) {
 
 
 
-	    fs.writeFile(keyPatch+keyNames[0], privkey, function(err) {
-		    if(err) return console.log(err);
-		});
+	    fs.writeFileSync(keyPatch+keyNames[0], privkey);
 
-	    fs.writeFile(keyPatch+keyNames[1], pubkey, function(err) {
-		    if(err) return console.log(err);
-		});
+	    fs.writeFileSync(keyPatch+keyNames[1], pubkey);
 
-	    fs.writeFile(keyPatch+keyNames[2], revocationCertificate, function(err) {
-		    if(err) return console.log(err);
-		});
+	    fs.writeFileSync(keyPatch+keyNames[2], revocationCertificate);
         readPublicKey(keyPatch+keyNames[1]).then(function (res){
             var d = {
                 publicKeyArmored : pubkey,
@@ -1313,7 +1307,7 @@ ipcMain.on("outbox", function (e,data) {
 
 ipcMain.on("outbox:seeMail",function(e,data)
 {
-    var d = path.join(inboxDir+ data.folder + "/");
+    var d = path.join(outboxDir+ data.folder + "/");
     //console.log(d);
     var textFile = fs.readFileSync(d+".text.txt",'utf8');
     var info = data;
