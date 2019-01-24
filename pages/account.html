@@ -18,6 +18,8 @@
                     <label> SMTP port</label> <input type="text" name="smtpPort"> <br>
                     <label>IMAP url</label> <input type="text" name="imapUrl">
                     <label>IMAP port</label> <input type="text" name="imapPort">
+                    <br>
+                    <label>myfile.is token</label> <input type="text" name="token">
                 </p>
             </fieldset>
             <input type="submit" value="Save account">
@@ -38,6 +40,7 @@
             $('#accountForm input[name="smtpPort"]').val(data.smtpPort);
             $('#accountForm input[name="imapUrl"]').val(data.imapUrl);
             $('#accountForm input[name="imapPort"]').val(data.imapPort);
+            $('#accountForm input[name="token"]').val(data.token);
         }
     });
 
@@ -62,6 +65,7 @@
         var smtpPort = $('#accountForm input[name="smtpPort"]').val();
         var imapUrl = $('#accountForm input[name="imapUrl"]').val();
         var imapPort = $('#accountForm input[name="imapPort"]').val();
+        var token = $('#accountForm input[name="token"]').val();
         console.log("username is " + userName);
         console.log("password is " + password);
         var res = {
@@ -70,7 +74,8 @@
             smtpUrl: smtpUrl,
             smtpPort: smtpPort,
             imapUrl: imapUrl,
-            imapPort: imapPort
+            imapPort: imapPort,
+            token : token
         }
         ipcRenderer.send("accountCreated", res);
         ipcRenderer.send('keygen:keyExists', true);

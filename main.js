@@ -207,6 +207,8 @@ ipcMain.on("account:isCreated", function (e, data)
                 if((acc.imapPort == undefined)|| (acc.imapPort == "")) {
                     acc.imapPort = imapPort;
                 }
+                if(acc.token == undefined)
+                    acc.token="";
 
                 console.log("Link is " + mailLink);
                 //acc.imapUrl = mailLink;
@@ -215,7 +217,7 @@ ipcMain.on("account:isCreated", function (e, data)
                 //connect_Imap(acc.userName,acc.password,acc.imapUrl,acc.imapPort);
 
                 mainWindow.webContents.send("account:isCreated",acc);
-                //conImap(acc.userName,acc.password,acc.imapUrl,acc.imapPort);
+                conImap(acc.userName,acc.password,acc.imapUrl,acc.imapPort);
 
         }catch (e) {
             mainWindow.webContents.send('account:isCreated',null);
@@ -237,6 +239,8 @@ ipcMain.on('accountCreated', function (e,data) {
         data.imapUrl = mailLink;
     if((data.imapPort == undefined)|| (data.imapPort == ""))
         data.imapPort = imapPort;
+    if(data.token == undefined)
+        data.token = "";
 
     fs.writeFileSync(profileDir+"profile.json",JSON.stringify(data));
    //mainWindow.loadURL(urlSOS('main.html'))
@@ -720,7 +724,7 @@ async function encrypt(privkey,passphrase,pubkey, message) {
 		privateKey: privKeyObj
 	}
     const encrypted = await openpgp.encrypt(options);
-	return encrypted;
+	return encrypted.data;
 }
 
 // private key used for signing the encrypted data
@@ -791,7 +795,7 @@ ipcMain.on("message:received",function(e,data)
         // todo
     });
     
-})
+});
 
 // private key of recipient to decrypt the data
 // public key of the sender to verify signed data
@@ -1051,7 +1055,7 @@ function smtp (url,port,userName,password,recipient,message)
     })
 }
 
-async function encryptAndZip(zipName,publicKey ,fileList,recipient)
+async function encryptAndZip(zipName,publicKey ,fileList,recipient,token)
 {
     var privateKey = fs.readFileSync(keyPatch+keyNames[0]);
     var archive = archiver('zip', {
@@ -1073,8 +1077,8 @@ async function encryptAndZip(zipName,publicKey ,fileList,recipient)
 
         /// get token somehow
 
-        //todo remove token
-        uploadFile(tmpDir+zipName,"?token=0e6b616adaafb1f8",publicKey,recipient);
+
+        uploadFile(tmpDir+zipName,token,publicKey,recipient);
 
         // node mailer, + encreypt the
 
@@ -1232,7 +1236,8 @@ async function uploadFile(filePath,token,publicKey,recipient)
                         // send emdial through nodemailer
                         //smtp();
                         var acc= JSON.parse(fs.readFileSync(profileDir+"profile.json"));
-                        smtp(acc.smtpUrl,acc.smtpPort,acc.userName,acc.password,)
+                        fs.writeFileSync(outboxDir+path.basename(filePath)+"-url.txt",encryptedUrl);
+                        smtp(acc.smtpUrl,acc.smtpPort,acc.userName,acc.password,encryptedUrl);
                         console.log(encryptedUrl);
                     });
                 }
@@ -1409,7 +1414,7 @@ async function sendEmail(data)
         // replace with find public key from address book
         var addressBook = JSON.parse(fs.readFileSync(addressDir+"addressbook.json"));
         var publicKey;
-        /*for (var i=0; i< addressBook.length; i++)
+        for (var i=0; i< addressBook.length; i++)
         {
             if(addressBook[i].email === data.recipient)
             {
@@ -1417,8 +1422,8 @@ async function sendEmail(data)
                 break;
             }
 
-        }*/
-        publicKey= fs.readFileSync(keyPatch+keyNames[1]);
+        }
+        //publicKey= fs.readFileSync(keyPatch+keyNames[1]);
         // todo
         //here I need to pick publick key from addressbook
         //
@@ -1437,7 +1442,14 @@ async function sendEmail(data)
         fs.writeFileSync(outboxDir+"outbox.json",JSON.stringify(outbox));
         // encrpyt all files and zip them please
 
-        encryptAndZip(zipName,publicKey,originalNames,data.recipient);
+        var acc = JSON.parse(fs.readFileSync(profileDir+'profile.json'));
+        var token;
+        if(acc.token == undefined)
+            token = "";
+        else
+            token = acc.token;
+
+        encryptAndZip(zipName,publicKey,originalNames,data.recipient,token);
         //put here encryption have to redo zipFiles function
 
         //messageLog['.text.txt'] = randomStr;
